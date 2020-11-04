@@ -2,9 +2,25 @@
 // Copyright (c) 2020 Mikhail Komarov <nemo@nil.foundation>
 // Copyright (c) 2020 Nikita Kaskov <nbering@nil.foundation>
 //
-// Distributed under the Boost Software License, Version 1.0
-// See accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt
+// MIT License
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 //---------------------------------------------------------------------------//
 
 #ifndef CRYPTO3_ALGEBRA_PAIRING_BLS12_FUNCTIONS_HPP
@@ -23,12 +39,12 @@ namespace nil {
 
                     using namespace nil::crypto3::algebra;
 
-                    template<std::size_t ModulusBits = 381, std::size_t GeneratorBits = CHAR_BIT>
+                    template<std::size_t ModulusBits = 381>
                     class bls12_pairing_functions;
 
                     template<>
-                    class bls12_pairing_functions<381, CHAR_BIT> : public bls12_basic_policy<381, CHAR_BIT> {
-                        using policy_type = bls12_basic_policy<381, CHAR_BIT>;
+                    class bls12_pairing_functions<381> : public bls12_basic_policy<381> {
+                        using policy_type = bls12_basic_policy<381>;
 
                     public:
                         using Fq = typename policy_type::Fq;
@@ -76,9 +92,8 @@ namespace nil {
 
                         typedef ate_g1_precomp g1_precomp;
                         typedef ate_g2_precomp g2_precomp;
-                    
-                    private:
 
+                    private:
                         /*************************  FINAL EXPONENTIATIONS  ***********************************/
 
                         static gt final_exponentiation_first_chunk(const gt &elt) {
@@ -143,13 +158,10 @@ namespace nil {
                                 V * M;    // (elt^(z^2-2z) * elt)^(q^3) * (elt^(z^3-2z^2) * elt^z)^(q^2) *
                                           // (elt^(z^4-2z^3+2z) * elt^(-1))^q * elt^(z^5-2z^4+2z^2) * elt^(-z+2) * elt
 
-                            const gt result = W;
-
-                            return result;
+                            return W;
                         }
 
                     public:
-
                         static gt final_exponentiation(const gt &elt) {
                             /* OLD naive version:
                                 gt result = elt^final_exponent;
@@ -161,10 +173,9 @@ namespace nil {
                         }
 
                     private:
-
                         /*************************  ATE PAIRING ***********************************/
 
-                        static void doubling_step_for_miller_loop(const Fq two_inv, g2 &current, ate_ell_coeffs &c) {
+                        static void doubling_step_for_miller_loop(const Fq &two_inv, g2 &current, ate_ell_coeffs &c) {
 
                             const Fq2 X = current.X, Y = current.Y, Z = current.Z;
 
@@ -311,7 +322,7 @@ namespace nil {
                         }
 
                         static gt ate_double_miller_loop(const ate_g1_precomp &prec_P1, const ate_g2_precomp &prec_Q1,
-                                                  const ate_g1_precomp &prec_P2, const ate_g2_precomp &prec_Q2) {
+                                                         const ate_g1_precomp &prec_P2, const ate_g2_precomp &prec_Q2) {
 
                             gt f = gt::one();
 
@@ -387,7 +398,7 @@ namespace nil {
                         }
 
                         static gt double_miller_loop(const g1_precomp &prec_P1, const g2_precomp &prec_Q1,
-                                              const g1_precomp &prec_P2, const g2_precomp &prec_Q2) {
+                                                     const g1_precomp &prec_P2, const g2_precomp &prec_Q2) {
                             return ate_double_miller_loop(prec_P1, prec_Q1, prec_P2, prec_Q2);
                         }
 
@@ -404,4 +415,4 @@ namespace nil {
         }            // namespace algebra
     }                // namespace crypto3
 }    // namespace nil
-#endif    // ALGEBRA_PAIRING_BLS12_FUNCTIONS_HPP
+#endif    // CRYPTO3_ALGEBRA_PAIRING_BLS12_FUNCTIONS_HPP

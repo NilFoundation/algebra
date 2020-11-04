@@ -2,9 +2,25 @@
 // Copyright (c) 2020 Mikhail Komarov <nemo@nil.foundation>
 // Copyright (c) 2020 Nikita Kaskov <nbering@nil.foundation>
 //
-// Distributed under the Boost Software License, Version 1.0
-// See accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt
+// MIT License
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 //---------------------------------------------------------------------------//
 
 #ifndef CRYPTO3_ALGEBRA_CURVES_X962_P_HPP
@@ -16,7 +32,7 @@
 #include <nil/crypto3/algebra/fields/x962_p/base_field.hpp>
 #include <nil/crypto3/algebra/fields/x962_p/scalar_field.hpp>
 
-#include <nil/crypto3/algebra/detail/literals.hpp>
+#include <nil/crypto3/detail/literals.hpp>
 
 namespace nil {
     namespace crypto3 {
@@ -35,12 +51,12 @@ namespace nil {
                 template<>
                 struct x962_p_v2<192> {
                     constexpr static const std::size_t base_field_bits = 192;
-                    typedef fields::x962_p_v2_fq<base_field_bits, CHAR_BIT> base_field_type;
+                    typedef fields::x962_p_v2_fq<base_field_bits> base_field_type;
                     typedef typename base_field_type::modulus_type number_type;
                     constexpr static const number_type base_field_modulus = base_field_type::modulus;
 
                     constexpr static const std::size_t scalar_field_bits = 192;
-                    typedef fields::x962_p_v2_fr<scalar_field_bits, CHAR_BIT> scalar_field_type;
+                    typedef fields::x962_p_v2_fr<scalar_field_bits> scalar_field_type;
                     constexpr static const number_type scalar_field_modulus = scalar_field_type::modulus;
 
                     constexpr static const number_type p = base_field_modulus;
@@ -55,12 +71,12 @@ namespace nil {
                 template<>
                 struct x962_p_v3<192> {
                     constexpr static const std::size_t base_field_bits = 192;
-                    typedef fields::x962_p_v2_fq<base_field_bits, CHAR_BIT> base_field_type;
+                    typedef fields::x962_p_v2_fq<base_field_bits> base_field_type;
                     typedef typename base_field_type::modulus_type number_type;
                     constexpr static const number_type base_field_modulus = base_field_type::modulus;
 
                     constexpr static const std::size_t scalar_field_bits = 192;
-                    typedef fields::x962_p_v2_fr<scalar_field_bits, CHAR_BIT> scalar_field_type;
+                    typedef fields::x962_p_v2_fr<scalar_field_bits> scalar_field_type;
                     constexpr static const number_type scalar_field_modulus = scalar_field_type::modulus;
 
                     constexpr static const number_type p = base_field_modulus;
@@ -75,12 +91,12 @@ namespace nil {
                 template<>
                 struct x962_p_v1<239> {
                     constexpr static const std::size_t base_field_bits = 239;
-                    typedef fields::x962_p_v1_fq<base_field_bits, CHAR_BIT> base_field_type;
+                    typedef fields::x962_p_v1_fq<base_field_bits> base_field_type;
                     typedef typename base_field_type::modulus_type number_type;
                     constexpr static const number_type base_field_modulus = base_field_type::modulus;
 
                     constexpr static const std::size_t scalar_field_bits = 239;
-                    typedef fields::x962_p_v1_fr<scalar_field_bits, CHAR_BIT> scalar_field_type;
+                    typedef fields::x962_p_v1_fr<scalar_field_bits> scalar_field_type;
                     constexpr static const number_type scalar_field_modulus = scalar_field_type::modulus;
 
                     constexpr static const number_type p = base_field_modulus;
@@ -99,12 +115,12 @@ namespace nil {
                 template<>
                 struct x962_p_v2<239> {
                     constexpr static const std::size_t base_field_bits = 239;
-                    typedef fields::x962_p_v2_fq<base_field_bits, CHAR_BIT> base_field_type;
+                    typedef fields::x962_p_v2_fq<base_field_bits> base_field_type;
                     typedef typename base_field_type::modulus_type number_type;
                     constexpr static const number_type base_field_modulus = base_field_type::modulus;
 
                     constexpr static const std::size_t scalar_field_bits = 239;
-                    typedef fields::x962_p_v2_fr<scalar_field_bits, CHAR_BIT> scalar_field_type;
+                    typedef fields::x962_p_v2_fr<scalar_field_bits> scalar_field_type;
                     constexpr static const number_type scalar_field_modulus = scalar_field_type::modulus;
 
                     constexpr static const number_type p = base_field_modulus;
@@ -123,12 +139,12 @@ namespace nil {
                 template<>
                 struct x962_p_v3<239> {
                     constexpr static const std::size_t base_field_bits = 239;
-                    typedef fields::x962_p_v3_fq<base_field_bits, CHAR_BIT> base_field_type;
+                    typedef fields::x962_p_v3_fq<base_field_bits> base_field_type;
                     typedef typename base_field_type::modulus_type number_type;
                     constexpr static const number_type base_field_modulus = base_field_type::modulus;
 
                     constexpr static const std::size_t scalar_field_bits = 239;
-                    typedef fields::x962_p_v3_fr<scalar_field_bits, CHAR_BIT> scalar_field_type;
+                    typedef fields::x962_p_v3_fr<scalar_field_bits> scalar_field_type;
                     constexpr static const number_type scalar_field_modulus = scalar_field_type::modulus;
 
                     constexpr static const number_type p = base_field_modulus;
@@ -154,4 +170,4 @@ namespace nil {
     }            // namespace crypto3
 }    // namespace nil
 
-#endif    // ALGEBRA_CURVES_X962_P_HPP
+#endif    // CRYPTO3_ALGEBRA_CURVES_X962_P_HPP

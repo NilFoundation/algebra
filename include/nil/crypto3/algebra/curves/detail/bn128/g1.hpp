@@ -3,9 +3,25 @@
 // Copyright (c) 2020 Nikita Kaskov <nbering@nil.foundation>
 // Copyright (c) 2020 Ilias Khairullin <ilias@nil.foundation>
 //
-// Distributed under the Boost Software License, Version 1.0
-// See accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt
+// MIT License
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 //---------------------------------------------------------------------------//
 
 #ifndef CRYPTO3_ALGEBRA_CURVES_BN128_G1_HPP
@@ -17,7 +33,10 @@
 #include <nil/crypto3/algebra/fields/bn128/scalar_field.hpp>
 #include <nil/crypto3/algebra/fields/fp2.hpp>
 
-#include <nil/crypto3/algebra/detail/literals.hpp>
+#include <nil/crypto3/detail/type_traits.hpp>
+#include <nil/crypto3/detail/literals.hpp>
+
+#include <nil/crypto3/algebra/curves/detail/scalar_mul.hpp>
 
 namespace nil {
     namespace crypto3 {
@@ -27,36 +46,35 @@ namespace nil {
 
                     using namespace nil::crypto3::algebra;
 
-                    template<std::size_t ModulusBits = 254, std::size_t GeneratorBits = CHAR_BIT>
+                    template<std::size_t ModulusBits = 254>
                     struct bn128_g1 {
 
                         constexpr static const std::size_t g1_field_bits = ModulusBits;
-                        typedef typename fields::bn128_fq<g1_field_bits, CHAR_BIT>::value_type g1_field_type_value;
+                        typedef typename fields::bn128_fq<g1_field_bits>::value_type g1_field_type_value;
 
                         constexpr static const std::size_t g2_field_bits = ModulusBits;
-                        typedef typename fields::fp2<fields::bn128_fq<g2_field_bits, CHAR_BIT>>::value_type
-                            g2_field_type_value;
+                        typedef typename fields::fp2<fields::bn128_fq<g2_field_bits>>::value_type g2_field_type_value;
 
-                        using underlying_field_type_value = g1_field_type_value;
+                        using underlying_field_value_type = g1_field_type_value;
 
-                        //constexpr static const std::size_t value_bits =  policy_type::g1_field_type::value_bits;
+                        // constexpr static const std::size_t value_bits =  policy_type::g1_field_type::value_bits;
 
-                        underlying_field_type_value X;
-                        underlying_field_type_value Y;
-                        underlying_field_type_value Z;
+                        underlying_field_value_type X;
+                        underlying_field_value_type Y;
+                        underlying_field_value_type Z;
 
                         /*************************  Constructors and zero/one  ***********************************/
 
                         bn128_g1() :
-                            bn128_g1(underlying_field_type_value::one(), underlying_field_type_value::one(),
-                                     underlying_field_type_value::zero()) {};
+                            bn128_g1(underlying_field_value_type::one(), underlying_field_value_type::one(),
+                                     underlying_field_value_type::zero()) {};
                         // must be
                         // bn128_g1() : bn128_g1(zero_fill[0], zero_fill[1], zero_fill[2]) {};
                         // when constexpr fields will be finished
 
-                        bn128_g1(underlying_field_type_value X,
-                                 underlying_field_type_value Y,
-                                 underlying_field_type_value Z) {
+                        bn128_g1(underlying_field_value_type X,
+                                 underlying_field_value_type Y,
+                                 underlying_field_value_type Z) {
                             this->X = X;
                             this->Y = Y;
                             this->Z = Z;
@@ -67,8 +85,8 @@ namespace nil {
                         }
 
                         static bn128_g1 one() {
-                            return bn128_g1(underlying_field_type_value(1), underlying_field_type_value(2),
-                                            underlying_field_type_value(1));
+                            return bn128_g1(underlying_field_value_type(1), underlying_field_value_type(2),
+                                            underlying_field_value_type(1));
                             // must be
                             // return bn128_g1(one_fill[0], one_fill[1], one_fill[2]);
                             // when constexpr fields will be finished
@@ -87,7 +105,7 @@ namespace nil {
 
                             /* now neither is O */
 
-                            underlying_field_type_value Z1sq, Z2sq, lhs, rhs;
+                            underlying_field_value_type Z1sq, Z2sq, lhs, rhs;
                             Z1sq = (this->Z).squared();
                             Z2sq = other.Z.squared();
                             lhs = Z2sq * this->X;
@@ -97,7 +115,7 @@ namespace nil {
                                 return false;
                             }
 
-                            underlying_field_type_value Z1cubed, Z2cubed;
+                            underlying_field_value_type Z1cubed, Z2cubed;
                             Z1cubed = Z1sq * this->Z;
                             Z2cubed = Z2sq * other.Z;
                             lhs = Z2cubed * this->Y;
@@ -163,9 +181,9 @@ namespace nil {
                             (p_out[0], p_out[1], p_out[2]) = 2(X, Y, Z)
                         */
                         bn128_g1 doubled() const {
-                            underlying_field_type_value p_out[3];
+                            underlying_field_value_type p_out[3];
 
-                            underlying_field_type_value A, B, C, D, E;
+                            underlying_field_value_type A, B, C, D, E;
                             A = X.squared();
                             B = Y.squared();
                             C = B.squared();
@@ -202,11 +220,11 @@ namespace nil {
 
                             // we know that Z2 = 1
 
-                            underlying_field_type_value Z1Z1 = this->Z.squared();
+                            underlying_field_value_type Z1Z1 = this->Z.squared();
 
-                            underlying_field_type_value U2 = other.X * Z1Z1;
+                            underlying_field_value_type U2 = other.X * Z1Z1;
 
-                            underlying_field_type_value S2 = other.Y * this->Z * Z1Z1;
+                            underlying_field_value_type S2 = other.Y * this->Z * Z1Z1;
                             ;    // S2 = Y2*Z1*Z1Z1
 
                             if (this->X == U2 && this->Y == S2) {
@@ -215,7 +233,7 @@ namespace nil {
                             }
 
                             bn128_g1 result;
-                            underlying_field_type_value H, HH, I, J, r, V;
+                            underlying_field_value_type H, HH, I, J, r, V;
                             // H = U2-X1
                             H = U2 - this->X;
                             // HH = H^2
@@ -238,29 +256,17 @@ namespace nil {
                             return result;
                         }
 
-                        /*
-                            out = in * m
-                            @param out [out] Jacobi coord (out[0], out[1], out[2])
-                            @param in [in] Jacobi coord (in[0], in[1], in[2])
-                            @param m [in] scalar
-                            @note MSB first binary method.
-
-                            @note don't use Fp as INT
-                            the inner format of Fp is not compatible with mie::Vuint
-                        */
                         template<typename NumberType>
-                        bn128_g1 operator*(const NumberType N) const {
-                            // return multi_exp(*this, N);
-                            return *this;
+                        bn128_g1 operator*(const NumberType &other) const {
+                            return scalar_mul(*this, other);
                         }
 
                     private:
+                        bn128_g1 add(const bn128_g1 &other) const {    // unfinished
 
-                        bn128_g1 add (const bn128_g1 &other) const { // unfinished
-                            
-                            underlying_field_type_value Z1Z1, Z2Z2, U1, U2, S1, S2, H, I, J, t3, r, V;
+                            underlying_field_value_type Z1Z1, Z2Z2, U1, U2, S1, S2, H, I, J, t3, r, V;
 
-                            underlying_field_type_value X_out, Y_out, Z_out;
+                            underlying_field_value_type X_out, Y_out, Z_out;
 
                             Z1Z1 = Z.squared();
                             Z2Z2 = other.Z.squared();
@@ -277,7 +283,6 @@ namespace nil {
                             J = H * I;
                             r = t3.doubled();
                             V = U1 * I;
-                            
 
                             X_out = r.squared() - J - V.doubled();
                             Y_out = r * (V - X_out) - (S1 * J).doubled();
@@ -287,20 +292,19 @@ namespace nil {
                         }
 
                     public:
-
                         /*************************  Reducing operations  ***********************************/
 
                         bn128_g1 to_affine_coordinates() const {
-                            underlying_field_type_value p_out[3];
+                            underlying_field_value_type p_out[3];
 
                             if (is_zero() || Z == 1)
                                 return *this;
-                            underlying_field_type_value r, r2;
+                            underlying_field_value_type r, r2;
                             r = Z.inversed();
                             r2 = r.squared();
                             p_out[0] = X * r2;        // r2
                             p_out[1] = Y * r * r2;    // r3
-                            p_out[2] = underlying_field_type_value::one();
+                            p_out[2] = underlying_field_value_type::one();
 
                             return bn128_g1(p_out[0], p_out[1], p_out[2]);
                         }
@@ -310,13 +314,13 @@ namespace nil {
                         }
 
                     private:
-                        /*constexpr static const std::array<underlying_field_type_value, 3> zero_fill = {
-                            underlying_field_type_value::one(), underlying_field_type_value::one(),
-                            underlying_field_type_value::zero()};*/
+                        /*constexpr static const std::array<underlying_field_value_type, 3> zero_fill = {
+                            underlying_field_value_type::one(), underlying_field_value_type::one(),
+                            underlying_field_value_type::zero()};*/
 
-                        /*constexpr static const std::array<underlying_field_type_value, 3> one_fill = {
-                            underlying_field_type_value(1), underlying_field_type_value(2),
-                           underlying_field_type_value(1)};*/
+                        /*constexpr static const std::array<underlying_field_value_type, 3> one_fill = {
+                            underlying_field_value_type(1), underlying_field_value_type(2),
+                           underlying_field_value_type(1)};*/
                     };
 
                 }    // namespace detail
@@ -324,4 +328,4 @@ namespace nil {
         }            // namespace algebra
     }                // namespace crypto3
 }    // namespace nil
-#endif    // ALGEBRA_CURVES_BN128_G1_HPP
+#endif    // CRYPTO3_ALGEBRA_CURVES_BN128_G1_HPP

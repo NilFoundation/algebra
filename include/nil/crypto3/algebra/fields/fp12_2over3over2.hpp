@@ -2,9 +2,25 @@
 // Copyright (c) 2020 Mikhail Komarov <nemo@nil.foundation>
 // Copyright (c) 2020 Nikita Kaskov <nbering@nil.foundation>
 //
-// Distributed under the Boost Software License, Version 1.0
-// See accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt
+// MIT License
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 //---------------------------------------------------------------------------//
 
 #ifndef CRYPTO3_ALGEBRA_FIELDS_FP12_2OVER3OVER2_EXTENSION_HPP
@@ -30,7 +46,6 @@ namespace nil {
                 /*!
                  * @brief
                  * @tparam ModulusBits
-                 * @tparam GeneratorBits
                  */
                 template<typename BaseField>
                 struct fp12_2over3over2 {
@@ -49,13 +64,9 @@ namespace nil {
 
                     constexpr static const modulus_type modulus = policy_type::modulus;
 
-                    constexpr static const std::size_t generator_bits = policy_type::generator_bits;
-                    typedef typename policy_type::generator_type generator_type;
+                    constexpr static const modulus_type mul_generator = policy_type::mul_generator;
 
-                    constexpr static const generator_type mul_generator = policy_type::mul_generator;
-
-                    typedef
-                        typename detail::element_fp12_2over3over2<extension_policy> value_type;
+                    typedef typename detail::element_fp12_2over3over2<extension_policy> value_type;
 
                     constexpr static const std::size_t arity = 12;
                     constexpr static const std::size_t value_bits = arity * modulus_bits;
@@ -65,8 +76,8 @@ namespace nil {
                 constexpr typename fp12_2over3over2<BaseField>::modulus_type const fp12_2over3over2<BaseField>::modulus;
 
                 template<typename BaseField>
-                constexpr typename fp12_2over3over2<BaseField>::generator_type const
-                    fp12_2over3over2<BaseField>::mul_generator;
+                constexpr
+                    typename fp12_2over3over2<BaseField>::modulus_type const fp12_2over3over2<BaseField>::mul_generator;
 
                 template<typename BaseField>
                 constexpr typename std::size_t const fp12_2over3over2<BaseField>::arity;
@@ -76,4 +87,4 @@ namespace nil {
     }            // namespace crypto3
 }    // namespace nil
 
-#endif    // ALGEBRA_FIELDS_FP12_2OVER3OVER2_EXTENSION_HPP
+#endif    // CRYPTO3_ALGEBRA_FIELDS_FP12_2OVER3OVER2_EXTENSION_HPP

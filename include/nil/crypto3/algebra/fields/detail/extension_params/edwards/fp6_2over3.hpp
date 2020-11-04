@@ -2,9 +2,25 @@
 // Copyright (c) 2020 Mikhail Komarov <nemo@nil.foundation>
 // Copyright (c) 2020 Nikita Kaskov <nbering@nil.foundation>
 //
-// Distributed under the Boost Software License, Version 1.0
-// See accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt
+// MIT License
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 //---------------------------------------------------------------------------//
 
 #ifndef CRYPTO3_ALGEBRA_FIELDS_EDWARDS_FP6_2OVER3_EXTENSION_PARAMS_HPP
@@ -14,7 +30,7 @@
 #include <nil/crypto3/algebra/fields/edwards/base_field.hpp>
 #include <nil/crypto3/algebra/fields/fp3.hpp>
 
-#include <nil/crypto3/algebra/detail/literals.hpp>
+#include <nil/crypto3/detail/literals.hpp>
 
 namespace nil {
     namespace crypto3 {
@@ -24,16 +40,16 @@ namespace nil {
 
                     using namespace nil::crypto3::algebra;
 
-                    template<typename FieldType>
+                    template<typename BaseField>
                     struct fp6_2over3_extension_params;
 
                     /************************* EDWARDS ***********************************/
 
-                    template<std::size_t ModulusBits, std::size_t GeneratorBits>
-                    class fp6_2over3_extension_params<fields::edwards_base_field<ModulusBits, GeneratorBits>>
-                        : public params<fields::edwards_base_field<ModulusBits, GeneratorBits>> {
+                    template<std::size_t ModulusBits>
+                    class fp6_2over3_extension_params<fields::edwards_base_field<ModulusBits>>
+                        : public params<fields::edwards_base_field<ModulusBits>> {
 
-                        typedef fields::edwards_base_field<ModulusBits, GeneratorBits> base_field_type;
+                        typedef fields::edwards_base_field<ModulusBits> base_field_type;
                         typedef params<base_field_type> policy_type;
 
                     public:
@@ -46,7 +62,7 @@ namespace nil {
                         typedef typename non_residue_field_type::value_type non_residue_type;
                         typedef fields::fp3<base_field_type> underlying_field_type;
                         typedef typename underlying_field_type::value_type underlying_type;
-                        //typedef element_fp3<fp3_extension_params<field_type>> underlying_type;
+                        // typedef element_fp3<fp3_extension_params<field_type>> underlying_type;
 
                         /*constexpr static const std::array<non_residue_type, 6> Frobenius_coeffs_c1 =
                            {non_residue_type(0x01),
@@ -67,19 +83,18 @@ namespace nil {
                         constexpr static const modulus_type non_residue = modulus_type(0x3D);
                     };
 
-                    template<std::size_t ModulusBits, std::size_t GeneratorBits>
-                    constexpr typename fp6_2over3_extension_params<
-                        edwards_base_field<ModulusBits, GeneratorBits>>::modulus_type const
-                        fp6_2over3_extension_params<edwards_base_field<ModulusBits, GeneratorBits>>::non_residue;
+                    template<std::size_t ModulusBits>
+                    constexpr typename fp6_2over3_extension_params<edwards_base_field<ModulusBits>>::modulus_type const
+                        fp6_2over3_extension_params<edwards_base_field<ModulusBits>>::non_residue;
 
-                    template<std::size_t ModulusBits, std::size_t GeneratorBits>
-                    constexpr typename fp6_2over3_extension_params<
-                        edwards_base_field<ModulusBits, GeneratorBits>>::modulus_type const
-                        fp6_2over3_extension_params<edwards_base_field<ModulusBits, GeneratorBits>>::modulus;
+                    template<std::size_t ModulusBits>
+                    constexpr typename fp6_2over3_extension_params<edwards_base_field<ModulusBits>>::modulus_type const
+                        fp6_2over3_extension_params<edwards_base_field<ModulusBits>>::modulus;
 
-                    template<std::size_t ModulusBits, std::size_t GeneratorBits>
-                    constexpr std::array<typename fp6_2over3_extension_params<edwards_base_field<ModulusBits, GeneratorBits>>::modulus_type,
-                                         6> const fp6_2over3_extension_params<edwards_base_field<ModulusBits, GeneratorBits>>::Frobenius_coeffs_c1;
+                    template<std::size_t ModulusBits>
+                    constexpr std::array<
+                        typename fp6_2over3_extension_params<edwards_base_field<ModulusBits>>::modulus_type, 6> const
+                        fp6_2over3_extension_params<edwards_base_field<ModulusBits>>::Frobenius_coeffs_c1;
                 }    // namespace detail
             }        // namespace fields
         }            // namespace algebra

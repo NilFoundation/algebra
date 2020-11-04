@@ -3,9 +3,25 @@
 // Copyright (c) 2020 Nikita Kaskov <nbering@nil.foundation>
 // Copyright (c) 2020 Ilias Khairullin <ilias@nil.foundation>
 //
-// Distributed under the Boost Software License, Version 1.0
-// See accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt
+// MIT License
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 //---------------------------------------------------------------------------//
 
 #ifndef CRYPTO3_ALGEBRA_CURVES_BLS12_HPP
@@ -17,20 +33,20 @@
 
 #include <nil/crypto3/algebra/pairing/bls12.hpp>
 
+#include <nil/crypto3/algebra/pairing/detail/bls12/functions.hpp>
+
 namespace nil {
     namespace crypto3 {
         namespace algebra {
             namespace curves {
 
-                using namespace nil::crypto3::algebra;
-
                 /*
                     E/Fp: y^2 = x^3 + 4.
                 */
-                template<std::size_t ModulusBits, std::size_t GeneratorBits = CHAR_BIT>
+                template<std::size_t ModulusBits>
                 struct bls12 {
 
-                    using policy_type = detail::bls12_basic_policy<ModulusBits, GeneratorBits>;
+                    using policy_type = detail::bls12_basic_policy<ModulusBits>;
 
                     typedef typename policy_type::base_field_type base_field_type;
                     typedef typename policy_type::scalar_field_type scalar_field_type;
@@ -43,17 +59,15 @@ namespace nil {
                     constexpr static const std::size_t scalar_field_bits = policy_type::scalar_field_bits;
                     constexpr static const number_type q = policy_type::q;
 
-                    typedef typename detail::bls12_g1<base_field_bits> g1_type;
-                    typedef typename detail::bls12_g2<base_field_bits> g2_type;
-
-                    typedef std::vector<g1_type> g1_vector;
-                    typedef std::vector<g2_type> g2_vector;
+                    typedef typename detail::bls12_g1<ModulusBits> g1_type;
+                    typedef typename detail::bls12_g2<ModulusBits> g2_type;
 
                     constexpr static const bool has_affine_pairing = false;
 
-                    typedef typename pairing::pairing_policy<bls12<ModulusBits, GeneratorBits>> pairing_policy;
+                    typedef typename pairing::pairing_policy<bls12<ModulusBits>, 
+                        pairing::detail::bls12_pairing_functions<ModulusBits>> pairing_policy;
 
-                    typedef typename policy_type::gt_field_type::value_type gt_type;
+                    typedef typename policy_type::gt_field_type gt_type;
                 };
 
                 typedef bls12<381> bls12_381;
@@ -63,4 +77,4 @@ namespace nil {
     }            // namespace crypto3
 }    // namespace nil
 
-#endif    // ALGEBRA_CURVES_BLS12_381_HPP
+#endif    // CRYPTO3_ALGEBRA_CURVES_BLS12_381_HPP

@@ -2,9 +2,25 @@
 // Copyright (c) 2020 Mikhail Komarov <nemo@nil.foundation>
 // Copyright (c) 2020 Nikita Kaskov <nbering@nil.foundation>
 //
-// Distributed under the Boost Software License, Version 1.0
-// See accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt
+// MIT License
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 //---------------------------------------------------------------------------//
 
 #ifndef CRYPTO3_ALGEBRA_FIELDS_EDWARDS_ARITHMETIC_PARAMS_HPP
@@ -16,18 +32,18 @@
 #include <nil/crypto3/algebra/fields/edwards/base_field.hpp>
 #include <nil/crypto3/algebra/fields/edwards/scalar_field.hpp>
 
-#include <nil/crypto3/algebra/detail/literals.hpp>
+#include <nil/crypto3/detail/literals.hpp>
 
 namespace nil {
     namespace crypto3 {
         namespace algebra {
             namespace fields {
 
-                template<std::size_t ModulusBits, std::size_t GeneratorBits>
-                struct arithmetic_params<edwards_base_field<ModulusBits, GeneratorBits>>
-                    : public params<edwards_base_field<ModulusBits, GeneratorBits>> {
+                template<std::size_t ModulusBits>
+                struct arithmetic_params<edwards_base_field<ModulusBits>>
+                    : public params<edwards_base_field<ModulusBits>> {
                 private:
-                    typedef params<edwards_base_field<ModulusBits, GeneratorBits>> policy_type;
+                    typedef params<edwards_base_field<ModulusBits>> policy_type;
 
                 public:
                     typedef typename policy_type::number_type number_type;
@@ -55,11 +71,11 @@ namespace nil {
                         0x206AFE4E951CAD89C5C9276B1A16A0DB75B485C0000000_cppui182;
                 };
 
-                template<std::size_t ModulusBits, std::size_t GeneratorBits>
-                struct arithmetic_params<fp3<edwards_base_field<ModulusBits, GeneratorBits>>>
-                    : public params<edwards_base_field<ModulusBits, GeneratorBits>> {
+                template<std::size_t ModulusBits>
+                struct arithmetic_params<fp3<edwards_base_field<ModulusBits>>>
+                    : public params<edwards_base_field<ModulusBits>> {
                 private:
-                    typedef params<edwards_base_field<ModulusBits, GeneratorBits>> policy_type;
+                    typedef params<edwards_base_field<ModulusBits>> policy_type;
 
                 public:
                     typedef typename policy_type::number_type number_type;
@@ -80,11 +96,11 @@ namespace nil {
                         0x214530CDE421990256A87901DDC6307E4ED27FAF4F877968EFCA129EF23243B915EF074F565027DAA0127ECF4EC788245754250524EA78AD2C1A16B28F2611D9140000000_cppui546;
                 };
 
-                template<std::size_t ModulusBits, std::size_t GeneratorBits>
-                struct arithmetic_params<edwards_scalar_field<ModulusBits, GeneratorBits>>
-                    : public params<edwards_scalar_field<ModulusBits, GeneratorBits>> {
+                template<std::size_t ModulusBits>
+                struct arithmetic_params<edwards_scalar_field<ModulusBits>>
+                    : public params<edwards_scalar_field<ModulusBits>> {
                 private:
-                    typedef params<edwards_scalar_field<ModulusBits, GeneratorBits>> policy_type;
+                    typedef params<edwards_scalar_field<ModulusBits>> policy_type;
 
                 public:
                     typedef typename policy_type::number_type number_type;
@@ -112,85 +128,85 @@ namespace nil {
                         0x81ABF93A5472B62717249DC9709660EF2A993C0000000_cppui181;
                 };
 
-                constexpr std::size_t const arithmetic_params<edwards_base_field<183, CHAR_BIT>>::s;
-                constexpr std::size_t const arithmetic_params<fp3<edwards_base_field<183, CHAR_BIT>>>::s;
-                constexpr std::size_t const arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::s;
+                constexpr std::size_t const arithmetic_params<edwards_base_field<183>>::s;
+                constexpr std::size_t const arithmetic_params<fp3<edwards_base_field<183>>>::s;
+                constexpr std::size_t const arithmetic_params<edwards_scalar_field<183>>::s;
 
-                constexpr typename arithmetic_params<edwards_base_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_base_field<183, CHAR_BIT>>::t;
-                constexpr typename arithmetic_params<fp3<edwards_base_field<183, CHAR_BIT>>>::extended_modulus_type 
-                    const arithmetic_params<fp3<edwards_base_field<183, CHAR_BIT>>>::t;
-                constexpr typename arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::t;
+                constexpr typename arithmetic_params<edwards_base_field<183>>::modulus_type const
+                    arithmetic_params<edwards_base_field<183>>::t;
+                constexpr typename arithmetic_params<fp3<edwards_base_field<183>>>::extended_modulus_type const
+                    arithmetic_params<fp3<edwards_base_field<183>>>::t;
+                constexpr typename arithmetic_params<edwards_scalar_field<183>>::modulus_type const
+                    arithmetic_params<edwards_scalar_field<183>>::t;
 
-                constexpr typename arithmetic_params<edwards_base_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_base_field<183, CHAR_BIT>>::t_minus_1_over_2;
-                constexpr typename arithmetic_params<fp3<edwards_base_field<183, CHAR_BIT>>>::extended_modulus_type 
-                    const arithmetic_params<fp3<edwards_base_field<183, CHAR_BIT>>>::t_minus_1_over_2;
-                constexpr typename arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::t_minus_1_over_2;
+                constexpr typename arithmetic_params<edwards_base_field<183>>::modulus_type const
+                    arithmetic_params<edwards_base_field<183>>::t_minus_1_over_2;
+                constexpr typename arithmetic_params<fp3<edwards_base_field<183>>>::extended_modulus_type const
+                    arithmetic_params<fp3<edwards_base_field<183>>>::t_minus_1_over_2;
+                constexpr typename arithmetic_params<edwards_scalar_field<183>>::modulus_type const
+                    arithmetic_params<edwards_scalar_field<183>>::t_minus_1_over_2;
 
-                constexpr typename arithmetic_params<edwards_base_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_base_field<183, CHAR_BIT>>::arithmetic_generator;
-                constexpr typename arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::arithmetic_generator;
+                constexpr typename arithmetic_params<edwards_base_field<183>>::modulus_type const
+                    arithmetic_params<edwards_base_field<183>>::arithmetic_generator;
+                constexpr typename arithmetic_params<edwards_scalar_field<183>>::modulus_type const
+                    arithmetic_params<edwards_scalar_field<183>>::arithmetic_generator;
 
-                constexpr typename arithmetic_params<edwards_base_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_base_field<183, CHAR_BIT>>::geometric_generator;
-                constexpr typename arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::geometric_generator;
+                constexpr typename arithmetic_params<edwards_base_field<183>>::modulus_type const
+                    arithmetic_params<edwards_base_field<183>>::geometric_generator;
+                constexpr typename arithmetic_params<edwards_scalar_field<183>>::modulus_type const
+                    arithmetic_params<edwards_scalar_field<183>>::geometric_generator;
 
-                constexpr typename arithmetic_params<edwards_base_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_base_field<183, CHAR_BIT>>::multiplicative_generator;
-                constexpr typename arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::multiplicative_generator;
+                constexpr typename arithmetic_params<edwards_base_field<183>>::modulus_type const
+                    arithmetic_params<edwards_base_field<183>>::multiplicative_generator;
+                constexpr typename arithmetic_params<edwards_scalar_field<183>>::modulus_type const
+                    arithmetic_params<edwards_scalar_field<183>>::multiplicative_generator;
 
-                constexpr typename arithmetic_params<edwards_base_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_base_field<183, CHAR_BIT>>::root_of_unity;
-                constexpr typename arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::root_of_unity;
+                constexpr typename arithmetic_params<edwards_base_field<183>>::modulus_type const
+                    arithmetic_params<edwards_base_field<183>>::root_of_unity;
+                constexpr typename arithmetic_params<edwards_scalar_field<183>>::modulus_type const
+                    arithmetic_params<edwards_scalar_field<183>>::root_of_unity;
 
-                constexpr typename arithmetic_params<edwards_base_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_base_field<183, CHAR_BIT>>::nqr;
-                constexpr std::array<typename arithmetic_params<fp3<edwards_base_field<183, CHAR_BIT>>>::modulus_type, 3> 
-                    const arithmetic_params<fp3<edwards_base_field<183, CHAR_BIT>>>::nqr;
-                constexpr typename arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::nqr;
+                constexpr typename arithmetic_params<edwards_base_field<183>>::modulus_type const
+                    arithmetic_params<edwards_base_field<183>>::nqr;
+                constexpr std::array<typename arithmetic_params<fp3<edwards_base_field<183>>>::modulus_type, 3> const
+                    arithmetic_params<fp3<edwards_base_field<183>>>::nqr;
+                constexpr typename arithmetic_params<edwards_scalar_field<183>>::modulus_type const
+                    arithmetic_params<edwards_scalar_field<183>>::nqr;
 
-                constexpr typename arithmetic_params<edwards_base_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_base_field<183, CHAR_BIT>>::nqr_to_t;
-                constexpr std::array<typename arithmetic_params<fp3<edwards_base_field<183, CHAR_BIT>>>::modulus_type, 3> 
-                    const arithmetic_params<fp3<edwards_base_field<183, CHAR_BIT>>>::nqr_to_t;
-                constexpr typename arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::nqr_to_t;
+                constexpr typename arithmetic_params<edwards_base_field<183>>::modulus_type const
+                    arithmetic_params<edwards_base_field<183>>::nqr_to_t;
+                constexpr std::array<typename arithmetic_params<fp3<edwards_base_field<183>>>::modulus_type, 3> const
+                    arithmetic_params<fp3<edwards_base_field<183>>>::nqr_to_t;
+                constexpr typename arithmetic_params<edwards_scalar_field<183>>::modulus_type const
+                    arithmetic_params<edwards_scalar_field<183>>::nqr_to_t;
 
-                constexpr typename arithmetic_params<edwards_base_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_base_field<183, CHAR_BIT>>::Rsquared;
-                constexpr typename arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::Rsquared;
+                constexpr typename arithmetic_params<edwards_base_field<183>>::modulus_type const
+                    arithmetic_params<edwards_base_field<183>>::Rsquared;
+                constexpr typename arithmetic_params<edwards_scalar_field<183>>::modulus_type const
+                    arithmetic_params<edwards_scalar_field<183>>::Rsquared;
 
-                constexpr typename arithmetic_params<edwards_base_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_base_field<183, CHAR_BIT>>::Rcubed;
-                constexpr typename arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::Rcubed;
+                constexpr typename arithmetic_params<edwards_base_field<183>>::modulus_type const
+                    arithmetic_params<edwards_base_field<183>>::Rcubed;
+                constexpr typename arithmetic_params<edwards_scalar_field<183>>::modulus_type const
+                    arithmetic_params<edwards_scalar_field<183>>::Rcubed;
 
-                constexpr typename arithmetic_params<edwards_base_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_base_field<183, CHAR_BIT>>::modulus;
-                constexpr typename arithmetic_params<fp3<edwards_base_field<183, CHAR_BIT>>>::modulus_type 
-                    const arithmetic_params<fp3<edwards_base_field<183, CHAR_BIT>>>::modulus;
-                constexpr typename arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::modulus;
+                constexpr typename arithmetic_params<edwards_base_field<183>>::modulus_type const
+                    arithmetic_params<edwards_base_field<183>>::modulus;
+                constexpr typename arithmetic_params<fp3<edwards_base_field<183>>>::modulus_type const
+                    arithmetic_params<fp3<edwards_base_field<183>>>::modulus;
+                constexpr typename arithmetic_params<edwards_scalar_field<183>>::modulus_type const
+                    arithmetic_params<edwards_scalar_field<183>>::modulus;
 
-                constexpr typename arithmetic_params<edwards_base_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_base_field<183, CHAR_BIT>>::group_order;
-                constexpr typename arithmetic_params<fp3<edwards_base_field<183, CHAR_BIT>>>::extended_modulus_type 
-                    const arithmetic_params<fp3<edwards_base_field<183, CHAR_BIT>>>::group_order;
-                constexpr typename arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::modulus_type 
-                    const arithmetic_params<edwards_scalar_field<183, CHAR_BIT>>::group_order;
+                constexpr typename arithmetic_params<edwards_base_field<183>>::modulus_type const
+                    arithmetic_params<edwards_base_field<183>>::group_order;
+                constexpr typename arithmetic_params<fp3<edwards_base_field<183>>>::extended_modulus_type const
+                    arithmetic_params<fp3<edwards_base_field<183>>>::group_order;
+                constexpr typename arithmetic_params<edwards_scalar_field<183>>::modulus_type const
+                    arithmetic_params<edwards_scalar_field<183>>::group_order;
 
             }    // namespace fields
         }        // namespace algebra
     }            // namespace crypto3
 }    // namespace nil
 
-#endif    // ALGEBRA_FIELDS_EDWARDS_ARITHMETIC_PARAMS_HPP
+#endif    // CRYPTO3_ALGEBRA_FIELDS_EDWARDS_ARITHMETIC_PARAMS_HPP

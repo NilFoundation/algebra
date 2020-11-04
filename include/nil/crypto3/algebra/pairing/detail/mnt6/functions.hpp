@@ -2,19 +2,35 @@
 // Copyright (c) 2020 Mikhail Komarov <nemo@nil.foundation>
 // Copyright (c) 2020 Nikita Kaskov <nbering@nil.foundation>
 //
-// Distributed under the Boost Software License, Version 1.0
-// See accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt
+// MIT License
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 //---------------------------------------------------------------------------//
 
 #ifndef CRYPTO3_ALGEBRA_PAIRING_MNT6_FUNCTIONS_HPP
 #define CRYPTO3_ALGEBRA_PAIRING_MNT6_FUNCTIONS_HPP
 
 #include <nil/crypto3/algebra/pairing/detail/mnt6/basic_policy.hpp>
-#include <nil/crypto3/algebra/pairing/detail/wnaf.hpp>
 
 #include <boost/multiprecision/number.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
+//#include <boost/multiprecision/wnaf.hpp>
 
 namespace nil {
     namespace crypto3 {
@@ -24,12 +40,12 @@ namespace nil {
 
                     using namespace nil::crypto3::algebra;
 
-                    template<std::size_t ModulusBits = 298, std::size_t GeneratorBits = CHAR_BIT>
+                    template<std::size_t ModulusBits = 298>
                     class mnt6_pairing_functions;
 
                     template<>
-                    class mnt6_pairing_functions<298, CHAR_BIT> : public mnt6_basic_policy<298, CHAR_BIT> {
-                        using policy_type = mnt6_basic_policy<298, CHAR_BIT>;
+                    class mnt6_pairing_functions<298> : public mnt6_basic_policy<298> {
+                        using policy_type = mnt6_basic_policy<298>;
 
                     public:
                         using Fq = typename policy_type::Fq;
@@ -113,7 +129,6 @@ namespace nil {
                         typedef ate_g2_precomp g2_precomp;
 
                     private:
-                        
                         /*************************  FINAL EXPONENTIATIONS  ***********************************/
 
                         static gt final_exponentiation_last_chunk(const gt &elt, const gt &elt_inv) {
@@ -146,7 +161,6 @@ namespace nil {
                         }
 
                     public:
-
                         static gt final_exponentiation(const gt &elt) {
                             const gt elt_inv = elt.inversed();
                             const gt elt_to_first_chunk = final_exponentiation_first_chunk(elt, elt_inv);
@@ -155,7 +169,7 @@ namespace nil {
 
                             return result;
                         }
-                        
+
                         /* affine ate miller loop */
                         static affine_ate_g1_precomputation affine_ate_precompute_g1(const g1 &P) {
 
@@ -188,7 +202,10 @@ namespace nil {
                             const typename policy_type::number_type &loop_count = policy_type::ate_loop_count;
                             bool found_nonzero = false;
 
-                            std::vector<long> NAF = find_wnaf(1, loop_count);
+                            // std::vector<long> NAF = boost::multiprecision::find_wnaf(1, loop_count);
+                            std::vector<long> NAF;
+                            // uncomment, when wnaf is ready
+
                             for (long i = NAF.size() - 1; i >= 0; --i) {
                                 if (!found_nonzero) {
                                     /* this skips the MSB itself */
@@ -242,9 +259,8 @@ namespace nil {
                         }
 
                     private:
-                        
                         static gt affine_ate_miller_loop(const affine_ate_g1_precomputation &prec_P,
-                                                  const affine_ate_g2_precomputation &prec_Q) {
+                                                         const affine_ate_g2_precomputation &prec_Q) {
 
                             gt f = gt::one();
 
@@ -252,7 +268,10 @@ namespace nil {
                             bool found_nonzero = false;
                             size_t idx = 0;
 
-                            std::vector<long> NAF = find_wnaf(1, loop_count);
+                            // std::vector<long> NAF = boost::multiprecision::find_wnaf(1, loop_count);
+                            std::vector<long> NAF;
+                            // uncomment, when wnaf is ready
+
                             for (long i = NAF.size() - 1; i >= 0; --i) {
                                 if (!found_nonzero) {
                                     /* this skips the MSB itself */
@@ -296,7 +315,7 @@ namespace nil {
                         };
 
                         static void doubling_step_for_flipped_miller_loop(extended_g2_projective &current,
-                                                                   ate_dbl_coeffs &dc) {
+                                                                          ate_dbl_coeffs &dc) {
                             const Fq3 X = current.X, Y = current.Y, Z = current.Z, T = current.T;
 
                             const Fq3 A = T.squared();                                  // A = T1^2
@@ -323,9 +342,9 @@ namespace nil {
                         }
 
                         static void mixed_addition_step_for_flipped_miller_loop(const Fq3 base_X, const Fq3 base_Y,
-                                                                         const Fq3 base_Y_squared,
-                                                                         extended_g2_projective &current,
-                                                                         ate_add_coeffs &ac) {
+                                                                                const Fq3 base_Y_squared,
+                                                                                extended_g2_projective &current,
+                                                                                ate_add_coeffs &ac) {
                             const Fq3 X1 = current.X, Y1 = current.Y, Z1 = current.Z, T1 = current.T;
                             const Fq3 &x2 = base_X, &y2 = base_Y, &y2_squared = base_Y_squared;
 
@@ -479,7 +498,7 @@ namespace nil {
                         }
 
                         static gt ate_double_miller_loop(const ate_g1_precomp &prec_P1, const ate_g2_precomp &prec_Q1,
-                                                  const ate_g1_precomp &prec_P2, const ate_g2_precomp &prec_Q2) {
+                                                         const ate_g1_precomp &prec_P2, const ate_g2_precomp &prec_Q2) {
 
                             Fq3 L1_coeff1 = Fq3(prec_P1.PX, Fq::zero(), Fq::zero()) - prec_Q1.QX_over_twist;
                             Fq3 L1_coeff2 = Fq3(prec_P2.PX, Fq::zero(), Fq::zero()) - prec_Q2.QX_over_twist;
@@ -561,7 +580,6 @@ namespace nil {
                         /*************************  CHOICE OF PAIRING ***********************************/
 
                     public:
-
                         static g1_precomp precompute_g1(const g1 &P) {
                             return ate_precompute_g1(P);
                         }
@@ -575,7 +593,7 @@ namespace nil {
                         }
 
                         static gt double_miller_loop(const g1_precomp &prec_P1, const g2_precomp &prec_Q1,
-                                              const g1_precomp &prec_P2, const g2_precomp &prec_Q2) {
+                                                     const g1_precomp &prec_P2, const g2_precomp &prec_Q2) {
                             return ate_double_miller_loop(prec_P1, prec_Q1, prec_P2, prec_Q2);
                         }
 
@@ -595,10 +613,9 @@ namespace nil {
                             return result;
                         }
                     };
-
                 }    // namespace detail
             }        // namespace pairing
         }            // namespace algebra
     }                // namespace crypto3
 }    // namespace nil
-#endif    // ALGEBRA_PAIRING_MNT6_FUNCTIONS_HPP
+#endif    // CRYPTO3_ALGEBRA_PAIRING_MNT6_FUNCTIONS_HPP
