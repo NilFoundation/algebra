@@ -27,6 +27,7 @@
 #define CRYPTO3_ALGEBRA_PAIRING_BLS12_FUNCTIONS_HPP
 
 #include <nil/crypto3/algebra/pairing/detail/bls12/basic_policy.hpp>
+#include <nil/crypto3/algebra/pairing/policies/bls12/final_exponentiation.hpp>
 
 #include <boost/multiprecision/number.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
@@ -43,6 +44,7 @@ namespace nil {
                     template<>
                     class bls12_pairing_functions<381> : public bls12_basic_policy<381> {
                         using policy_type = bls12_basic_policy<381>;
+                        constexpr static const std::size_t modulus_bits = 381;
 
                     public:
                         using Fq = typename policy_type::Fq;
@@ -58,7 +60,7 @@ namespace nil {
 
                         constexpr static const typename policy_type::number_type ate_loop_count =
                             policy_type::ate_loop_count;
-
+                            
                         struct ate_g1_precomp {
                             using value_type = Fq;
 
@@ -98,85 +100,6 @@ namespace nil {
 
                         typedef ate_g1_precomp g1_precomp;
                         typedef ate_g2_precomp g2_precomp;
-
-                    private:
-                        /*************************  FINAL EXPONENTIATIONS  ***********************************/
-
-                        static gt final_exponentiation_first_chunk(const gt &elt) {
-
-                            /*
-                              Computes result = elt^((q^6-1)*(q^2+1)).
-                              Follows, e.g., Beuchat et al page 9, by computing result as follows:
-                                 elt^((q^6-1)*(q^2+1)) = (conj(elt) * elt^(-1))^(q^2+1)
-                              More precisely:
-                              A = conj(elt)
-                              B = elt.inversed()
-                              C = A * B
-                              D = C.Frobenius_map(2)
-                              result = D * C
-                            */
-
-                            const gt A = elt.unitary_inversed();
-                            const gt B = elt.inversed();
-                            const gt C = A * B;
-                            const gt D = C.Frobenius_map(2);
-                            const gt result = D * C;
-
-                            return result;
-                        }
-
-                        static gt exp_by_z(const gt &elt) {
-
-                            gt result = elt.cyclotomic_exp(policy_type::final_exponent_z);
-                            if (policy_type::final_exponent_is_z_neg) {
-                                result = result.unitary_inversed();
-                            }
-
-                            return result;
-                        }
-
-                        static gt final_exponentiation_last_chunk(const gt &elt) {
-
-                            const gt A = elt.cyclotomic_squared();    // elt^2
-                            const gt B = A.unitary_inversed();        // elt^(-2)
-                            const gt C = exp_by_z(elt);               // elt^z
-                            const gt D = C.cyclotomic_squared();      // elt^(2z)
-                            const gt E = B * C;                       // elt^(z-2)
-                            const gt F = exp_by_z(E);                 // elt^(z^2-2z)
-                            const gt G = exp_by_z(F);                 // elt^(z^3-2z^2)
-                            const gt H = exp_by_z(G);                 // elt^(z^4-2z^3)
-                            const gt I = H * D;                       // elt^(z^4-2z^3+2z)
-                            const gt J = exp_by_z(I);                 // elt^(z^5-2z^4+2z^2)
-                            const gt K = E.unitary_inversed();        // elt^(-z+2)
-                            const gt L = K * J;                       // elt^(z^5-2z^4+2z^2) * elt^(-z+2)
-                            const gt M = elt * L;                     // elt^(z^5-2z^4+2z^2) * elt^(-z+2) * elt
-                            const gt N = elt.unitary_inversed();      // elt^(-1)
-                            const gt O = F * elt;                     // elt^(z^2-2z) * elt
-                            const gt P = O.Frobenius_map(3);          // (elt^(z^2-2z) * elt)^(q^3)
-                            const gt Q = I * N;                       // elt^(z^4-2z^3+2z) * elt^(-1)
-                            const gt R = Q.Frobenius_map(1);          // (elt^(z^4-2z^3+2z) * elt^(-1))^q
-                            const gt S = C * G;                       // elt^(z^3-2z^2) * elt^z
-                            const gt T = S.Frobenius_map(2);          // (elt^(z^3-2z^2) * elt^z)^(q^2)
-                            const gt U = T * P;    // (elt^(z^2-2z) * elt)^(q^3) * (elt^(z^3-2z^2) * elt^z)^(q^2)
-                            const gt V = U * R;    // (elt^(z^2-2z) * elt)^(q^3) * (elt^(z^3-2z^2) * elt^z)^(q^2) *
-                                                   // (elt^(z^4-2z^3+2z) * elt^(-1))^q
-                            const gt W =
-                                V * M;    // (elt^(z^2-2z) * elt)^(q^3) * (elt^(z^3-2z^2) * elt^z)^(q^2) *
-                                          // (elt^(z^4-2z^3+2z) * elt^(-1))^q * elt^(z^5-2z^4+2z^2) * elt^(-z+2) * elt
-
-                            return W;
-                        }
-
-                    public:
-                        static gt final_exponentiation(const gt &elt) {
-                            /* OLD naive version:
-                                gt result = elt^final_exponent;
-                            */
-                            gt A = final_exponentiation_first_chunk(elt);
-                            gt result = final_exponentiation_last_chunk(A);
-
-                            return result;
-                        }
 
                     private:
                         /*************************  ATE PAIRING ***********************************/
@@ -384,7 +307,7 @@ namespace nil {
 
                         static gt ate_reduced_pairing(const g1 &P, const g2 &Q) {
                             const gt f = ate_pairing(P, Q);
-                            const gt result = final_exponentiation(f);
+                            const gt result = policies::bls12_final_exponentiation<modulus_bits>()(f);
                             return result;
                         }
 

@@ -63,7 +63,7 @@ namespace nil {
 
                     constexpr static const bool has_affine_pairing = false;
 
-                    typedef typename pairing::pairing_policy<bls12<ModulusBits>,
+                    typedef typename pairing::bls12_pairing_policy<ModulusBits,
                                                              pairing::detail::bls12_pairing_functions<ModulusBits>>
                         pairing_policy;
 

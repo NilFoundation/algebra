@@ -26,6 +26,9 @@
 #ifndef CRYPTO3_ALGEBRA_PAIRING_BLS12_POLICY_HPP
 #define CRYPTO3_ALGEBRA_PAIRING_BLS12_POLICY_HPP
 
+#include <nil/crypto3/algebra/pairing/detail/bls12/basic_policy.hpp>
+#include <nil/crypto3/algebra/pairing/policies/bls12/final_exponentiation.hpp>
+
 namespace nil {
     namespace crypto3 {
         namespace algebra {
@@ -37,13 +40,13 @@ namespace nil {
             }    // namespace curves
             namespace pairing {
 
-                template<typename PairingCurveType, typename PairingFunctions>
-                struct pairing_policy;
+                
 
-                template<std::size_t ModulusBits, typename PairingFunctions>
-                class pairing_policy<curves::bls12<ModulusBits>, PairingFunctions> {
-                    using policy_type = PairingFunctions;
-
+                template<std::size_t ModulusBits, typename PairingFunctions, 
+                    typename FinalExponentiation = policies::bls12_final_exponentiation<ModulusBits>>
+                struct bls12_pairing_policy {
+                    using policy_type = detail::bls12_basic_policy<ModulusBits>;
+                    using functions_policy = PairingFunctions;
                 public:
                     using number_type = typename policy_type::number_type;
 
@@ -58,48 +61,46 @@ namespace nil {
                     using Fqk_type = typename policy_type::Fqk_field;
                     using GT_type = typename policy_type::gt;
 
-                    using G1_precomp = typename policy_type::g1_precomp;
-                    using G2_precomp = typename policy_type::g2_precomp;
+                    using G1_precomp = typename functions_policy::g1_precomp;
+                    using G2_precomp = typename functions_policy::g2_precomp;
 
-                    static inline typename policy_type::g1_precomp precompute_g1(const typename policy_type::g1 &P) {
-                        return policy_type::precompute_g1(P);
+                    static inline typename functions_policy::g1_precomp precompute_g1(const typename policy_type::g1 &P) {
+                        return functions_policy::precompute_g1(P);
                     }
 
-                    static inline typename policy_type::g2_precomp precompute_g2(const typename policy_type::g2 &Q) {
-                        return policy_type::precompute_g2(Q);
+                    static inline typename functions_policy::g2_precomp precompute_g2(const typename policy_type::g2 &Q) {
+                        return functions_policy::precompute_g2(Q);
                     }
 
                     static inline typename policy_type::gt pairing(const typename policy_type::g1 &P,
                                                                    const typename policy_type::g2 &Q) {
-                        return policy_type::pairing(P, Q);
+                        return functions_policy::pairing(P, Q);
                     }
 
                     static inline typename policy_type::gt reduced_pairing(const typename policy_type::g1 &P,
                                                                            const typename policy_type::g2 &Q) {
-                        return policy_type::reduced_pairing(P, Q);
+                        return functions_policy::reduced_pairing(P, Q);
                     }
 
                     static inline typename policy_type::gt
-                        double_miller_loop(const typename policy_type::g1_precomp &prec_P1,
-                                           const typename policy_type::g2_precomp &prec_Q1,
-                                           const typename policy_type::g1_precomp &prec_P2,
-                                           const typename policy_type::g2_precomp &prec_Q2) {
-                        return policy_type::double_miller_loop(prec_P1, prec_Q1, prec_P2, prec_Q2);
+                        double_miller_loop(const typename functions_policy::g1_precomp &prec_P1,
+                                           const typename functions_policy::g2_precomp &prec_Q1,
+                                           const typename functions_policy::g1_precomp &prec_P2,
+                                           const typename functions_policy::g2_precomp &prec_Q2) {
+                        return functions_policy::double_miller_loop(prec_P1, prec_Q1, prec_P2, prec_Q2);
                     }
 
-                    static inline typename policy_type::gt final_exponentiation(const typename policy_type::gt &elt) {
-                        return policy_type::final_exponentiation(elt);
-                    }
+                    using final_exponentiation = FinalExponentiation;
 
-                    static inline typename policy_type::gt miller_loop(const typename policy_type::g1_precomp &prec_P,
-                                                                       const typename policy_type::g2_precomp &prec_Q) {
-                        return policy_type::miller_loop(prec_P, prec_Q);
+                    static inline typename policy_type::gt miller_loop(const typename functions_policy::g1_precomp &prec_P,
+                                                                       const typename functions_policy::g2_precomp &prec_Q) {
+                        return functions_policy::miller_loop(prec_P, prec_Q);
                     }
                 };
 
-                template<std::size_t ModulusBits, typename PairingFunctions>
-                constexpr typename pairing_policy<curves::bls12<ModulusBits>, PairingFunctions>::number_type const
-                    pairing_policy<curves::bls12<ModulusBits>, PairingFunctions>::pairing_loop_count;
+                template<std::size_t ModulusBits, typename PairingFunctions, typename FinalExponentiation>
+                constexpr typename bls12_pairing_policy<ModulusBits, PairingFunctions, FinalExponentiation>::number_type const
+                    bls12_pairing_policy<ModulusBits, PairingFunctions, FinalExponentiation>::pairing_loop_count;
             }    // namespace pairing
         }        // namespace algebra
     }            // namespace crypto3
