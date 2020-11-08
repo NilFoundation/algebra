@@ -60,7 +60,7 @@ namespace nil {
 
                         constexpr static const typename policy_type::number_type ate_loop_count =
                             policy_type::ate_loop_count;
-                            
+
                         struct ate_g1_precomp {
                             using value_type = Fq;
 
@@ -307,7 +307,7 @@ namespace nil {
 
                         static gt ate_reduced_pairing(const g1 &P, const g2 &Q) {
                             const gt f = ate_pairing(P, Q);
-                            const gt result = policies::bls12_final_exponentiation<modulus_bits>()(f);
+                            const gt result = policies::bls12_final_exponentiation<modulus_bits>::process(f);
                             return result;
                         }
 

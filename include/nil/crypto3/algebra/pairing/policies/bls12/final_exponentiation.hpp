@@ -118,7 +118,6 @@ namespace nil {
                         };
                     }    // namespace detail
 
-
                     template<std::size_t ModulusBits = 381>
                     class bls12_final_exponentiation;
 
@@ -130,7 +129,7 @@ namespace nil {
                     public:
                         using gt = typename policy_type::gt;
                         
-                        gt operator()(const gt &elt) {
+                        static gt process (const gt &elt) {
                             /* OLD naive version:
                                 gt result = elt^final_exponent;
                             */

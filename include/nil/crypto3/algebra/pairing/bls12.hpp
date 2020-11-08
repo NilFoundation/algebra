@@ -90,7 +90,9 @@ namespace nil {
                         return functions_policy::double_miller_loop(prec_P1, prec_Q1, prec_P2, prec_Q2);
                     }
 
-                    using final_exponentiation = FinalExponentiation;
+                    static inline typename policy_type::gt final_exponentiation(const typename policy_type::gt &elt) {
+                        return FinalExponentiation::process(elt);
+                    }
 
                     static inline typename policy_type::gt miller_loop(const typename functions_policy::g1_precomp &prec_P,
                                                                        const typename functions_policy::g2_precomp &prec_Q) {
