@@ -43,19 +43,23 @@ namespace nil {
                             typename policy_type::non_residue_type(policy_type::non_residue[0],
                                                                    policy_type::non_residue[1]);
 
-                        using underlying_type = typename policy_type::underlying_type;
+                        typedef typename policy_type::underlying_type underlying_type;
 
-                        using value_type = std::array<underlying_type, 2>;
+                        using data_type = std::array<underlying_type, 2>;
 
-                        value_type data;
+                        data_type data;
 
                         element_fp12_2over3over2() {
-                            data = value_type({underlying_type::zero(), underlying_type::zero()});
+                            data = data_type({underlying_type::zero(), underlying_type::zero()});
                         }
 
                         element_fp12_2over3over2(underlying_type in_data0, underlying_type in_data1) {
-                            data = value_type({in_data0, in_data1});
+                            data = data_type({in_data0, in_data1});
                         }
+
+                        element_fp12_2over3over2(const data_type &in_data) {
+                            data = data_type({in_data[0], in_data[1]});
+                        };
 
                         element_fp12_2over3over2(const element_fp12_2over3over2 &other) {
                             data[0] = underlying_type(other.data[0]);

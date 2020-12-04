@@ -36,8 +36,6 @@ namespace nil {
             namespace pairing {
                 namespace detail {
 
-                    using nil::crypto3::algebra;
-
                     template<std::size_t ModulusBits = 254>
                     class alt_bn128_pairing_functions;
 
@@ -46,11 +44,19 @@ namespace nil {
                         using policy_type = alt_bn128_basic_policy<254>;
 
                     public:
-                        using Fq = typename policy_type::Fq;
+                        typedef typename policy_type::Fq Fq;
                         using Fq2 = typename policy_type::Fq2;
-                        using gt = typename policy_type::gt;
+                        typedef typename policy_type::gt gt;
                         using g1 = typename policy_type::g1;
                         using g2 = typename policy_type::g2;
+
+                        typedef typename policy_type::Fp_field Fp_field;
+                        typedef typename policy_type::Fq_field Fq_field;
+                        typedef typename policy_type::Fqe_field Fqe_field;
+                        typedef typename policy_type::Fqk_field Fqk_field;
+
+                        constexpr static const typename policy_type::number_type ate_loop_count =
+                            policy_type::ate_loop_count;
 
                         struct ate_g1_precomp {
                             Fq PX;
@@ -323,7 +329,7 @@ namespace nil {
                             gt f = gt::one();
 
                             bool found_one = false;
-                            size_t idx = 0;
+                            std::size_t idx = 0;
 
                             const typename policy_type::number_type &loop_count = policy_type::ate_loop_count;
 
@@ -370,7 +376,7 @@ namespace nil {
                             gt f = gt::one();
 
                             bool found_one = false;
-                            size_t idx = 0;
+                            std::size_t idx = 0;
 
                             const typename policy_type::number_type &loop_count = policy_type::ate_loop_count;
 

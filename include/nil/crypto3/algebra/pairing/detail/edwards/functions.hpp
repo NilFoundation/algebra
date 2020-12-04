@@ -37,8 +37,6 @@ namespace nil {
             namespace pairing {
                 namespace detail {
 
-                    using namespace nil::crypto3::algebra;
-
                     template<std::size_t ModulusBits = 183>
                     class edwards_pairing_functions;
 
@@ -47,11 +45,19 @@ namespace nil {
                         using policy_type = edwards_basic_policy<183>;
 
                     public:
-                        using Fq = typename policy_type::Fq;
+                        typedef typename policy_type::Fq Fq;
                         using Fq3 = typename policy_type::Fq3;
-                        using gt = typename policy_type::gt;
+                        typedef typename policy_type::gt gt;
                         using g1 = typename policy_type::g1;
                         using g2 = typename policy_type::g2;
+
+                        typedef typename policy_type::Fp_field Fp_field;
+                        typedef typename policy_type::Fq_field Fq_field;
+                        typedef typename policy_type::Fqe_field Fqe_field;
+                        typedef typename policy_type::Fqk_field Fqk_field;
+
+                        constexpr static const typename policy_type::number_type ate_loop_count =
+                            policy_type::ate_loop_count;
 
                         struct Fq_conic_coefficients {
 
@@ -288,7 +294,7 @@ namespace nil {
                             gt f = gt::one();
 
                             bool found_one = false;
-                            size_t idx = 0;
+                            std::size_t idx = 0;
                             for (long i = policy_type::scalar_field_bits - 1; i >= 0; --i) {
                                 const bool bit = boost::multiprecision::bit_test(policy_type::scalar_field_modulus, i);
                                 if (!found_one) {
@@ -503,7 +509,7 @@ namespace nil {
                             gt f = gt::one();
 
                             bool found_one = false;
-                            size_t idx = 0;
+                            std::size_t idx = 0;
                             for (long i = number_type_max_bits - 1; i >= 0; --i) {
                                 const bool bit = boost::multiprecision::bit_test(loop_count, i);
                                 if (!found_one) {
@@ -538,7 +544,7 @@ namespace nil {
                             gt f = gt::one();
 
                             bool found_one = false;
-                            size_t idx = 0;
+                            std::size_t idx = 0;
                             for (long i = number_type_max_bits - 1; i >= 0; --i) {
                                 const bool bit = boost::multiprecision::bit_test(loop_count, i);
                                 if (!found_one) {

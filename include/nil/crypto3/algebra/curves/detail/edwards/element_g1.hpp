@@ -39,31 +39,44 @@ namespace nil {
         namespace algebra {
             namespace curves {
                 namespace detail {
-
+                    /** @brief A struct representing a group G1 of Edwards curve.
+                     *    @tparam ModulusBits size of the base field in bits 
+                     *
+                     */
                     template<std::size_t ModulusBits>
                     struct edwards_g1;
-
+                    /** @brief A struct representing an element from the group G1 of edwards curve.
+                     *    @tparam ModulusBits size of the base field in bits 
+                     *
+                     */
                     template<std::size_t ModulusBits>
                     struct element_edwards_g1 { };
-
+                    /** @brief A struct representing an element from the group G1 of edwards curve.
+                     *
+                     * The size of the group G1 in bits equals 181.
+                     */
                     template<>
                     struct element_edwards_g1<183> {
 
                         using group_type = edwards_g1<183>;
 
                         using policy_type = edwards_basic_policy<183>;
-                        constexpr static const std::size_t g1_field_bits = policy_type::base_field_bits;
-                        typedef typename policy_type::g1_field_type::value_type g1_field_type_value;
-                        typedef typename policy_type::g2_field_type::value_type g2_field_type_value;
+                        using underlying_field_type = typename policy_type::g1_field_type;
 
-                        using underlying_field_value_type = g1_field_type_value;
+                        using g1_field_type_value = typename policy_type::g1_field_type::value_type;
+                        // must be removed later
+
+                        typedef typename underlying_field_type::value_type underlying_field_value_type;
 
                         underlying_field_value_type X;
                         underlying_field_value_type Y;
                         underlying_field_value_type Z;
 
                         /*************************  Constructors and zero/one  ***********************************/
-
+                        /** @brief 
+                         *    @return the point at infinity by default
+                         *
+                         */
                         element_edwards_g1() :
                             element_edwards_g1(underlying_field_value_type::zero(),
                                                underlying_field_value_type::one(),
@@ -72,20 +85,31 @@ namespace nil {
                         // element_edwards_g1() : element_edwards_g1(zero_fill[0], zero_fill[1], zero_fill[2]) {};
                         // when constexpr fields will be finished
 
+                        /** @brief 
+                         *    @return the selected point $(X:Y:Z)$ in the projective coordinates
+                         *
+                         */
                         element_edwards_g1(underlying_field_value_type in_X, underlying_field_value_type in_Y,
                                            underlying_field_value_type in_Z) {
                             this->X = X;
                             this->Y = Y;
                             this->Z = Z;
                         };
-
+                        /** @brief 
+                         *    @return the selected point $(X:Y:X*Y)$ in the inverted coordinates
+                         *
+                         */
                         element_edwards_g1(underlying_field_value_type X, underlying_field_value_type Y) :
                             element_edwards_g1(X, Y, X * Y) {};
-
+                         /** @brief Get the point at infinity
+                         *
+                         */
                         static element_edwards_g1 zero() {
                             return element_edwards_g1();
                         }
-
+                        /** @brief Get the generator of group G1
+                         *
+                         */
                         static element_edwards_g1 one() {
                             return element_edwards_g1(
                                 underlying_field_value_type(0x26C5DF4587AA6A5D345EFC9F2D47F8B1656517EF618F7A_cppui182),
@@ -127,11 +151,17 @@ namespace nil {
                         bool operator!=(const element_edwards_g1 &other) const {
                             return !(operator==(other));
                         }
-
+                        /** @brief
+                         * 
+                         * @return true if element from group G1 is the point at infinity
+                         */
                         bool is_zero() const {
                             return (this->Y.is_zero() && this->Z.is_zero());
                         }
-
+                        /** @brief
+                         * 
+                         * @return true if element from group G1 in affine coordinates
+                         */
                         bool is_special() const {
                             return (this->is_zero() || this->Z == underlying_field_value_type::one());
                         }
@@ -171,7 +201,10 @@ namespace nil {
                         element_edwards_g1 operator-(const element_edwards_g1 &B) const {
                             return (*this) + (-B);
                         }
-
+                        /** @brief 
+                         * 
+                         * @return doubled element from group G1
+                         */
                         element_edwards_g1 doubled() const {
 
                             if (this->is_zero()) {
@@ -193,7 +226,11 @@ namespace nil {
                                 return element_edwards_g1(X3, Y3, Z3);
                             }
                         }
-
+                        /** @brief 
+                         * 
+                         * “Mixed addition” refers to the case Z2 known to be 1.
+                         * @return addition of two elements from group G1
+                         */
                         element_edwards_g1 mixed_add(const element_edwards_g1 &other) const {
 
                             // handle special cases having to do with O
@@ -246,7 +283,10 @@ namespace nil {
 
                     public:
                         /*************************  Reducing operations  ***********************************/
-
+                        /** @brief 
+                         * 
+                         * @return return the corresponding element from inverted coordinates to affine coordinates
+                         */
                         element_edwards_g1 to_affine_coordinates() const {
                             underlying_field_value_type p_out[3];
 
@@ -268,7 +308,10 @@ namespace nil {
 
                             return element_edwards_g1(p_out[0], p_out[1], p_out[2]);
                         }
-
+                        /** @brief 
+                         * 
+                         * @return return the corresponding element from projective coordinates to affine coordinates
+                         */
                         element_edwards_g1 to_special() const {
                             underlying_field_value_type p_out[3];
 
@@ -288,24 +331,7 @@ namespace nil {
                         /*constexpr static */ const g1_field_type_value a = g1_field_type_value(policy_type::a);
                         /*constexpr static */ const g1_field_type_value d = g1_field_type_value(policy_type::d);
 
-                        /*constexpr static const g2_field_type_value
-                            twist = g2_field_type_value(typename g2_field_type_value::underlying_type::zero(),
-                                                        typename g2_field_type_value::underlying_type::one(),
-                                                        typename g2_field_type_value::underlying_type::zero());
-                        constexpr static const g2_field_type_value twist_coeff_a = twist.mul_by_Fp(a);
-                        constexpr static const g2_field_type_value twist_coeff_d = twist.mul_by_Fp(d);
-
-                        constexpr static const g1_field_type_value twist_mul_by_a_c0 = a *
-                        g2_field_type_value::non_residue; constexpr static const g1_field_type_value twist_mul_by_a_c1 =
-                        a; constexpr static const g1_field_type_value twist_mul_by_a_c2 = a; constexpr static const
-                        g1_field_type_value twist_mul_by_d_c0 = d * g2_field_type_value::non_residue; constexpr static
-                        const g1_field_type_value twist_mul_by_d_c1 = d; constexpr static const g1_field_type_value
-                        twist_mul_by_d_c2 = d; constexpr static const g1_field_type_value twist_mul_by_q_Y =
-                        g1_field_type_value(0xB35E3665A18365954D018902935D4419423F84321BC3E_cppui180); constexpr static
-                        const g1_field_type_value twist_mul_by_q_Z =
-                        g1_field_type_value(0xB35E3665A18365954D018902935D4419423F84321BC3E_cppui180);
-
-                        constexpr static const underlying_field_value_type zero_fill = {
+                        /*constexpr static const underlying_field_value_type zero_fill = {
                             underlying_field_value_type::zero(), underlying_field_value_type::one(),
                             underlying_field_value_type::zero()};
 

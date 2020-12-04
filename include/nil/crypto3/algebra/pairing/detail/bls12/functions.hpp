@@ -37,8 +37,6 @@ namespace nil {
             namespace pairing {
                 namespace detail {
 
-                    using namespace nil::crypto3::algebra;
-
                     template<std::size_t ModulusBits = 381>
                     class bls12_pairing_functions;
 
@@ -47,11 +45,19 @@ namespace nil {
                         using policy_type = bls12_basic_policy<381>;
 
                     public:
-                        using Fq = typename policy_type::Fq;
+                        typedef typename policy_type::Fq Fq;
                         using Fq2 = typename policy_type::Fq2;
-                        using gt = typename policy_type::gt;
+                        typedef typename policy_type::gt gt;
                         using g1 = typename policy_type::g1;
                         using g2 = typename policy_type::g2;
+
+                        typedef typename policy_type::Fp_field Fp_field;
+                        typedef typename policy_type::Fq_field Fq_field;
+                        typedef typename policy_type::Fqe_field Fqe_field;
+                        typedef typename policy_type::Fqk_field Fqk_field;
+
+                        constexpr static const typename policy_type::number_type ate_loop_count =
+                            policy_type::ate_loop_count;
 
                         struct ate_g1_precomp {
                             using value_type = Fq;
@@ -65,7 +71,7 @@ namespace nil {
                         };
 
                         struct ate_ell_coeffs {
-                            using value_type = Fq2;
+                            typedef Fq2 value_type;
 
                             value_type ell_0;
                             value_type ell_VW;
@@ -78,12 +84,12 @@ namespace nil {
                         };
 
                         struct ate_g2_precomp {
-                            using value_type = Fq2;
-                            using coeffs_type = std::vector<ate_ell_coeffs>;
+                            typedef Fq2 value_type;
+                            typedef ate_ell_coeffs coeffs_type;
 
                             value_type QX;
                             value_type QY;
-                            coeffs_type coeffs;
+                            std::vector<coeffs_type> coeffs;
 
                             bool operator==(const ate_g2_precomp &other) const {
                                 return (this->QX == other.QX && this->QY == other.QY && this->coeffs == other.coeffs);
@@ -286,7 +292,7 @@ namespace nil {
                             gt f = gt::one();
 
                             bool found_one = false;
-                            size_t idx = 0;
+                            std::size_t idx = 0;
 
                             const typename policy_type::number_type &loop_count = policy_type::ate_loop_count;
 
@@ -327,7 +333,7 @@ namespace nil {
                             gt f = gt::one();
 
                             bool found_one = false;
-                            size_t idx = 0;
+                            std::size_t idx = 0;
 
                             const typename policy_type::number_type &loop_count = policy_type::ate_loop_count;
 

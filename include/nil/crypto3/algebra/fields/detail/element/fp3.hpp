@@ -44,34 +44,34 @@ namespace nil {
                         constexpr static const modulus_type modulus = policy_type::modulus;
 
                     public:
-                        using field_type = typename policy_type::field_type;
+                        typedef typename policy_type::field_type field_type;
 
                         /*constexpr static*/ typename policy_type::non_residue_type non_residue =
                             typename policy_type::non_residue_type(policy_type::non_residue);
 
-                        using underlying_type = typename policy_type::underlying_type;
+                        typedef typename policy_type::underlying_type underlying_type;
 
-                        using value_type = std::array<underlying_type, 3>;
+                        using data_type = std::array<underlying_type, 3>;
 
-                        value_type data;
+                        data_type data;
 
                         element_fp3() {
                             data =
-                                value_type({underlying_type::zero(), underlying_type::zero(), underlying_type::zero()});
+                                data_type({underlying_type::zero(), underlying_type::zero(), underlying_type::zero()});
                         }
 
                         element_fp3(int in_data0, int in_data1, int in_data2) {
-                            data = value_type(
+                            data = data_type(
                                 {underlying_type(in_data0), underlying_type(in_data1), underlying_type(in_data2)});
                         }
 
                         element_fp3(modulus_type in_data0, modulus_type in_data1, modulus_type in_data2) {
-                            data = value_type(
+                            data = data_type(
                                 {underlying_type(in_data0), underlying_type(in_data1), underlying_type(in_data2)});
                         }
 
                         element_fp3(underlying_type in_data0, underlying_type in_data1, underlying_type in_data2) {
-                            data = value_type({in_data0, in_data1, in_data2});
+                            data = data_type({in_data0, in_data1, in_data2});
                         }
 
                         element_fp3(const element_fp3 &other) {
@@ -160,7 +160,7 @@ namespace nil {
 
                             element_fp3 one = this->one();
 
-                            size_t v = policy_type::s;
+                            std::size_t v = policy_type::s;
                             element_fp3 z(policy_type::nqr_to_t[0], policy_type::nqr_to_t[1], policy_type::nqr_to_t[2]);
                             element_fp3 w = this->pow(policy_type::t_minus_1_over_2);
                             element_fp3 x((*this) * w);
@@ -170,7 +170,7 @@ namespace nil {
                             // (does not terminate if not a square!)
 
                             while (b != one) {
-                                size_t m = 0;
+                                std::size_t m = 0;
                                 element_fp3 b2m = b;
                                 while (b2m != one) {
                                     /* invariant: b2m = b^(2^m) after entering this loop */

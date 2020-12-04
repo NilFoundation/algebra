@@ -28,6 +28,8 @@
 
 #include <nil/crypto3/algebra/fields/detail/exponentiation.hpp>
 
+#include <boost/multiprecision/wnaf.hpp>
+
 namespace nil {
     namespace crypto3 {
         namespace algebra {
@@ -42,19 +44,23 @@ namespace nil {
                         /*constexpr static*/ const typename policy_type::non_residue_type non_residue =
                             typename policy_type::non_residue_type(policy_type::non_residue);
 
-                        using underlying_type = typename policy_type::underlying_type;
+                        typedef typename policy_type::underlying_type underlying_type;
 
-                        using value_type = std::array<underlying_type, 2>;
+                        using data_type = std::array<underlying_type, 2>;
 
-                        value_type data;
+                        data_type data;
 
                         element_fp4() {
-                            data = value_type({underlying_type::zero(), underlying_type::zero()});
+                            data = data_type({underlying_type::zero(), underlying_type::zero()});
                         }
 
                         element_fp4(underlying_type in_data0, underlying_type in_data1) {
-                            data = value_type({in_data0, in_data1});
+                            data = data_type({in_data0, in_data1});
                         }
+
+                        element_fp4(const data_type &in_data) {
+                            data = data_type({in_data[0], in_data[1]});
+                        };
 
                         element_fp4(const element_fp4 &other) {
                             data[0] = underlying_type(other.data[0]);
@@ -181,11 +187,11 @@ namespace nil {
 
                         template<typename PowerType>
                         element_fp4 cyclotomic_exp(const PowerType &exponent) const {
-                            /*element_fp4  res = this->one();
+                            element_fp4  res = this->one();
                             element_fp4  this_inverse = this->unitary_inversed();
 
                             bool found_nonzero = false;
-                            std::vector<long> NAF = find_wnaf(1, exponent);
+                            std::vector<long> NAF = boost::multiprecision::find_wnaf(1, exponent);
 
                             for (long i = static_cast<long>(NAF.size() - 1); i >= 0; --i) {
                                 if (found_nonzero) {
@@ -204,9 +210,9 @@ namespace nil {
                                 }
                             }
 
-                            return res;*/
+                            return res;
 
-                            return *this;
+                            // return *this;
                         }
 
                         /*inline static*/ underlying_type mul_by_non_residue(const underlying_type &A) const {

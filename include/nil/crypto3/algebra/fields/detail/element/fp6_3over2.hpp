@@ -43,22 +43,26 @@ namespace nil {
                             typename policy_type::non_residue_type(policy_type::non_residue[0],
                                                                    policy_type::non_residue[1]);
 
-                        using underlying_type = typename policy_type::underlying_type;
+                        typedef typename policy_type::underlying_type underlying_type;
 
-                        using value_type = std::array<underlying_type, 3>;
+                        using data_type = std::array<underlying_type, 3>;
 
-                        value_type data;
+                        data_type data;
 
                         element_fp6_3over2() {
                             data =
-                                value_type({underlying_type::zero(), underlying_type::zero(), underlying_type::zero()});
+                                data_type({underlying_type::zero(), underlying_type::zero(), underlying_type::zero()});
                         }
 
                         element_fp6_3over2(underlying_type in_data0,
                                            underlying_type in_data1,
                                            underlying_type in_data2) {
-                            data = value_type({in_data0, in_data1, in_data2});
+                            data = data_type({in_data0, in_data1, in_data2});
                         }
+
+                        element_fp6_3over2(const data_type &in_data) {
+                            data = data_type({in_data[0], in_data[1], in_data[2]});
+                        };
 
                         element_fp6_3over2(const element_fp6_3over2 &other) {
                             data[0] = underlying_type(other.data[0]);
@@ -129,9 +133,9 @@ namespace nil {
                                                   A2B2 = data[2] * B.data[2];
 
                             return element_fp6_3over2(
-                                {A0B0 + mul_by_non_residue((data[1] + data[2]) * (B.data[1] + B.data[2]) - A1B1 - A2B2),
+                                A0B0 + mul_by_non_residue((data[1] + data[2]) * (B.data[1] + B.data[2]) - A1B1 - A2B2),
                                  (data[0] + data[1]) * (B.data[0] + B.data[1]) - A0B0 - A1B1 + mul_by_non_residue(A2B2),
-                                 (data[0] + data[2]) * (B.data[0] + B.data[2]) - A0B0 + A1B1 - A2B2});
+                                 (data[0] + data[2]) * (B.data[0] + B.data[2]) - A0B0 + A1B1 - A2B2);
                         }
 
                         element_fp6_3over2 sqrt() const {

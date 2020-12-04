@@ -30,8 +30,9 @@
 #include <vector>
 
 #include <boost/multiprecision/number.hpp>
+#include <boost/multiprecision/cpp_int.hpp>
 
-#include <nil/crypto3/algebra/multiexp/detail/multiexp.hpp>
+#include <nil/crypto3/algebra/multiexp/policies.hpp>
 #include <nil/crypto3/algebra/curves/params.hpp>
 
 namespace nil {
@@ -39,29 +40,32 @@ namespace nil {
         namespace algebra {
 
             // TODO: Implement not only for vectors
-            template<typename BaseType, typename FieldType, multiexp_method Method>
+            template<typename BaseType, typename FieldType, 
+                typename MultiexpMethod = policies::multiexp_method_naive_plain<BaseType, FieldType>>
             typename BaseType::value_type
                 multiexp(typename std::vector<typename BaseType::value_type>::const_iterator vec_start,
                          typename std::vector<typename BaseType::value_type>::const_iterator vec_end,
                          typename std::vector<typename FieldType::value_type>::const_iterator scalar_start,
                          typename std::vector<typename FieldType::value_type>::const_iterator scalar_end,
                          const std::size_t chunks_count) {
+                using base_value_type = typename BaseType::value_type;
+                using field_value_type = typename FieldType::value_type;
+                using multiexp_method = MultiexpMethod;
 
                 const std::size_t total_size = std::distance(vec_start, vec_end);
 
                 if ((total_size < chunks_count) || (chunks_count == 1)) {
                     // no need to split into "chunks_count", can call implementation directly
-                    return detail::multiexp_inner<BaseType, FieldType, Method>(vec_start, vec_end, scalar_start,
-                                                                               scalar_end);
+                    return multiexp_method::process(vec_start, vec_end, scalar_start, scalar_end);
                 }
 
                 const std::size_t one_chunk_size = total_size / chunks_count;
 
-                typename BaseType::value_type result = BaseType::value_type::zero();
+                base_value_type result = base_value_type::zero();
 
                 for (std::size_t i = 0; i < chunks_count; ++i) {
                     result =
-                        result + detail::multiexp_inner<BaseType, FieldType, Method>(
+                        result + multiexp_method::process(
                                      vec_start + i * one_chunk_size,
                                      (i == chunks_count - 1 ? vec_end : vec_start + (i + 1) * one_chunk_size),
                                      scalar_start + i * one_chunk_size,
@@ -71,7 +75,8 @@ namespace nil {
                 return result;
             }
 
-            template<typename BaseType, typename FieldType, multiexp_method Method>
+            template<typename BaseType, typename FieldType, 
+                typename MultiexpMethod = policies::multiexp_method_naive_plain<BaseType, FieldType>>
             typename BaseType::value_type multiexp_with_mixed_addition(
                 typename std::vector<typename BaseType::value_type>::const_iterator vec_start,
                 typename std::vector<typename BaseType::value_type>::const_iterator vec_end,
@@ -79,17 +84,23 @@ namespace nil {
                 typename std::vector<typename FieldType::value_type>::const_iterator scalar_end,
                 const std::size_t chunks_count) {
 
+                using base_type = BaseType;
+                using field_type = FieldType;
+                using base_value_type = typename base_type::value_type;
+                using field_value_type = typename field_type::value_type;
+                using multiexp_method = MultiexpMethod;
+
                 assert(std::distance(vec_start, vec_end) == std::distance(scalar_start, scalar_end));
 
-                typename std::vector<typename BaseType::value_type>::const_iterator vec_it;
-                typename std::vector<typename FieldType::value_type>::const_iterator scalar_it;
+                typename std::vector<base_value_type>::const_iterator vec_it = vec_start;
+                typename std::vector<field_value_type>::const_iterator scalar_it = scalar_start;
 
-                const typename FieldType::value_type zero = FieldType::value_type::zero();
-                const typename FieldType::value_type one = FieldType::value_type::one();
-                std::vector<typename FieldType::value_type> p;
-                std::vector<typename BaseType::value_type> g;
+                const field_value_type zero = field_value_type::zero();
+                const field_value_type one = field_value_type::one();
+                std::vector<field_value_type> p;
+                std::vector<base_value_type> g;
 
-                typename BaseType::value_type acc = BaseType::value_type::zero();
+                base_value_type acc = base_value_type::zero();
 
                 for (; scalar_it != scalar_end; ++scalar_it, ++vec_it) {
                     if (*scalar_it == one) {
@@ -104,19 +115,8 @@ namespace nil {
                     }
                 }
 
-                return acc + multiexp<typename BaseType::value_type, typename FieldType::value_type, Method>(
+                return acc + multiexp<base_type, field_type, multiexp_method>(
                                  g.begin(), g.end(), p.begin(), p.end(), chunks_count);
-            }
-
-            template<typename BaseType>
-            typename BaseType::value_type
-                inner_product(typename std::vector<typename BaseType::value_type>::const_iterator a_start,
-                              typename std::vector<typename BaseType::value_type>::const_iterator a_end,
-                              typename std::vector<typename BaseType::value_type>::const_iterator b_start,
-                              typename std::vector<typename BaseType::value_type>::const_iterator b_end) {
-
-                return multiexp<typename BaseType::value_type, typename BaseType::value_type,
-                                multiexp_method_naive_plain>(a_start, a_end, b_start, b_end, 1);
             }
 
             /**
@@ -174,7 +174,7 @@ namespace nil {
                     }
 
                     for (std::size_t i = 0; i < window; ++i) {
-                        gouter = gouter + gouter;
+                        gouter = gouter.doubled();
                     }
                 }
 
@@ -188,7 +188,9 @@ namespace nil {
                                                         const window_table<GroupType> &powers_of_g,
                                                         const typename FieldType::value_type &pow) {
 
-                using number_type = typename FieldType::number_type;
+                typedef typename FieldType::number_type number_type;
+                // temporary added until fixed-precision modular adaptor is ready:
+                typedef boost::multiprecision::number<boost::multiprecision::backends::cpp_int_backend<>> non_fixed_precision_number_type;
 
                 const std::size_t outerc = (scalar_size + window - 1) / window;
                 const number_type pow_val = pow.data;
@@ -198,7 +200,8 @@ namespace nil {
                 for (std::size_t outer = 0; outer < outerc; ++outer) {
                     std::size_t inner = 0;
                     for (std::size_t i = 0; i < window; ++i) {
-                        if (boost::multiprecision::bit_test(pow_val, outer * window + i)) {
+                        if (boost::multiprecision::bit_test(
+                                non_fixed_precision_number_type(pow_val), outer * window + i)) {
                             inner |= 1u << i;
                         }
                     }
@@ -218,7 +221,7 @@ namespace nil {
                 std::vector<typename GroupType::value_type> res(v.size(), table[0][0]);
 
                 for (std::size_t i = 0; i < v.size(); ++i) {
-                    res[i] = windowed_exp(scalar_size, window, table, v[i]);
+                    res[i] = windowed_exp<GroupType, FieldType>(scalar_size, window, table, v[i]);
                 }
 
                 return res;
@@ -234,7 +237,7 @@ namespace nil {
                 std::vector<typename GroupType::value_type> res(v.size(), table[0][0]);
 
                 for (std::size_t i = 0; i < v.size(); ++i) {
-                    res[i] = windowed_exp(scalar_size, window, table, coeff * v[i]);
+                    res[i] = windowed_exp<GroupType, FieldType>(scalar_size, window, table, coeff * v[i]);
                 }
 
                 return res;
@@ -252,8 +255,7 @@ namespace nil {
 
                 GroupType::batch_to_special_all_non_zeros(non_zero_vec);
                 typename std::vector<typename GroupType::value_type>::const_iterator it = non_zero_vec.begin();
-                typename GroupType::value_type zero_special = GroupType::value_type::zero();
-                zero_special.to_special();
+                typename GroupType::value_type zero_special = GroupType::value_type::zero().to_special();
 
                 for (std::size_t i = 0; i < vec.size(); ++i) {
                     if (!vec[i].is_zero()) {

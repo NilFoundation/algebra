@@ -44,31 +44,35 @@ namespace nil {
                         constexpr static const modulus_type modulus = policy_type::modulus;
 
                     public:
-                        using field_type = typename policy_type::field_type;
+                        typedef typename policy_type::field_type field_type;
 
                         /*constexpr static*/ const typename policy_type::non_residue_type non_residue =
                             typename policy_type::non_residue_type(policy_type::non_residue);
 
-                        using underlying_type = typename policy_type::underlying_type;
+                        typedef typename policy_type::underlying_type underlying_type;
 
-                        using value_type = std::array<underlying_type, 2>;
+                        using data_type = std::array<underlying_type, 2>;
 
-                        value_type data;
+                        data_type data;
 
                         element_fp2() {
-                            data = value_type({underlying_type::zero(), underlying_type::zero()});
+                            data = data_type({underlying_type::zero(), underlying_type::zero()});
                         }
 
                         element_fp2(int in_data0, int in_data1) {
-                            data = value_type({underlying_type(in_data0), underlying_type(in_data1)});
+                            data = data_type({underlying_type(in_data0), underlying_type(in_data1)});
                         }
 
                         element_fp2(modulus_type in_data0, modulus_type in_data1) {
-                            data = value_type({underlying_type(in_data0), underlying_type(in_data1)});
+                            data = data_type({underlying_type(in_data0), underlying_type(in_data1)});
                         }
 
+                        element_fp2(const data_type &in_data) {
+                            data = data_type({in_data[0], in_data[1]});
+                        };
+
                         element_fp2(underlying_type in_data0, underlying_type in_data1) {
-                            data = value_type({in_data0, in_data1});
+                            data = data_type({in_data0, in_data1});
                         }
 
                         element_fp2(const element_fp2 &B) {
@@ -136,8 +140,8 @@ namespace nil {
                         element_fp2 operator*(const element_fp2 &B) const {
                             const underlying_type A0B0 = data[0] * B.data[0], A1B1 = data[1] * B.data[1];
 
-                            return element_fp2({A0B0 + non_residue * A1B1,
-                                                (data[0] + data[1]) * (B.data[0] + B.data[1]) - A0B0 - A1B1});
+                            return element_fp2(A0B0 + non_residue * A1B1,
+                                                (data[0] + data[1]) * (B.data[0] + B.data[1]) - A0B0 - A1B1);
                         }
 
                         element_fp2 &operator*=(const element_fp2 &B) {
@@ -208,7 +212,7 @@ namespace nil {
 
                             element_fp2 one = this->one();
 
-                            size_t v = policy_type::s;
+                            std::size_t v = policy_type::s;
                             element_fp2 z(policy_type::nqr_to_t[0], policy_type::nqr_to_t[1]);
                             element_fp2 w = this->pow(policy_type::t_minus_1_over_2);
                             element_fp2 x((*this) * w);
@@ -218,7 +222,7 @@ namespace nil {
                             // (does not terminate if not a square!)
 
                             while (b != one) {
-                                size_t m = 0;
+                                std::size_t m = 0;
                                 element_fp2 b2m = b;
                                 while (b2m != one) {
                                     /* invariant: b2m = b^(2^m) after entering this loop */
@@ -243,7 +247,14 @@ namespace nil {
                         }
 
                         element_fp2 squared() const {
-                            return (*this) * (*this);    // maybe can be done more effective
+                            // return (*this) * (*this);    // maybe can be done more effective
+
+                            /* Devegili OhEig Scott Dahab --- Multiplication and Squaring on Pairing-Friendly Fields.pdf; Section 3 (Complex squaring) */
+                            const underlying_type &A = data[0], &B = data[1];
+                            const underlying_type AB = A * B;
+
+                            return element_fp2((A + B) * (A + non_residue * B) - AB - non_residue * AB,
+                                               AB + AB);
                         }
 
                         bool is_square() const {

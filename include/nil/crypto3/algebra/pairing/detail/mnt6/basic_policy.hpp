@@ -36,8 +36,6 @@ namespace nil {
             namespace pairing {
                 namespace detail {
 
-                    using namespace nil::crypto3::algebra;
-
                     template<std::size_t ModulusBits = 298>
                     class mnt6_basic_policy;
 
@@ -46,21 +44,21 @@ namespace nil {
                         using policy_type = curves::detail::mnt6_basic_policy<298>;
 
                     public:
-                        using number_type = typename policy_type::number_type;
-                        using extended_number_type = typename policy_type::extended_number_type;
+                        typedef typename policy_type::number_type number_type;
+                        typedef typename policy_type::extended_number_type extended_number_type;
 
                         using g1_group = curves::detail::mnt6_g1<298>;
                         using g2_group = curves::detail::mnt6_g2<298>;
-                        using Fp_field = typename policy_type::scalar_field_type;
+                        typedef typename policy_type::scalar_field_type Fp_field;
                         using Fq_field = typename policy_type::g1_field_type;
                         using Fqe_field = typename policy_type::g2_field_type;
-                        using Fqk_field = typename policy_type::gt_field_type;
+                        typedef typename policy_type::gt_field_type Fqk_field;
 
                         using g1 = typename g1_group::value_type;
                         using g2 = typename g2_group::value_type;
-                        using Fq = typename Fq_field::value_type;
+                        typedef typename Fq_field::value_type Fq;
                         using Fq3 = typename Fqe_field::value_type;
-                        using gt = typename Fqk_field::value_type;
+                        typedef typename Fqk_field::value_type gt;
 
                         constexpr static const std::size_t base_field_bits = policy_type::base_field_bits;
                         constexpr static const number_type base_field_modulus = policy_type::base_field_modulus;
@@ -77,12 +75,21 @@ namespace nil {
 
                         constexpr static const number_type final_exponent_last_chunk_abs_of_w0 = number_type(
                             0x1EEF5546609756BEC2A33F0DC9A1B671660000_cppui149);    // same as ate_loop_count?
-                        constexpr static const number_type final_exponent_last_chunk_is_w0_neg = true;
+                        constexpr static const bool final_exponent_last_chunk_is_w0_neg = true;
                         constexpr static const number_type final_exponent_last_chunk_w1 = number_type(0x1);
                     };
 
-                    constexpr typename mnt6_basic_policy<298>::number_type const mnt6_basic_policy<298>::ate_loop_count;
+                    constexpr typename mnt6_basic_policy<298>::number_type const 
+                        mnt6_basic_policy<298>::ate_loop_count;
+                    constexpr typename mnt6_basic_policy<298>::number_type const 
+                        mnt6_basic_policy<298>::final_exponent_last_chunk_abs_of_w0;
+                    constexpr typename mnt6_basic_policy<298>::number_type const 
+                        mnt6_basic_policy<298>::final_exponent_last_chunk_w1;
+                    constexpr typename mnt6_basic_policy<298>::extended_number_type const 
+                        mnt6_basic_policy<298>::final_exponent;
 
+                    constexpr bool const mnt6_basic_policy<298>::ate_is_loop_count_neg;
+                    constexpr bool const mnt6_basic_policy<298>::final_exponent_last_chunk_is_w0_neg;
                 }    // namespace detail
             }        // namespace pairing
         }            // namespace algebra

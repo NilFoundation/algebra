@@ -31,13 +31,17 @@
 #include <nil/crypto3/algebra/curves/detail/mnt4/g1.hpp>
 #include <nil/crypto3/algebra/curves/detail/mnt4/g2.hpp>
 
-//#include <nil/crypto3/algebra/pairing/mnt4.hpp>
+#include <nil/crypto3/algebra/pairing/mnt4.hpp>
+#include <nil/crypto3/algebra/pairing/detail/mnt4/functions.hpp>
 
 namespace nil {
     namespace crypto3 {
         namespace algebra {
             namespace curves {
-
+                /** @brief A struct representing a mnt4 curve.
+                 *    @tparam ModulusBits size of the base field in bits 
+                 *
+                 */
                 template<std::size_t ModulusBits>
                 struct mnt4 {
 
@@ -48,16 +52,18 @@ namespace nil {
                     typedef typename policy_type::number_type number_type;
                     typedef typename policy_type::extended_number_type extended_number_type;
 
-                    constexpr static const std::size_t base_field_bits = policy_type::base_field_bits;
-                    constexpr static const number_type p = policy_type::p;
+                    constexpr static const std::size_t base_field_bits = policy_type::base_field_bits; ///< size of the base field in bits 
+                    constexpr static const number_type p = policy_type::p; ///< base field characteristic
 
-                    constexpr static const std::size_t scalar_field_bits = policy_type::scalar_field_bits;
-                    constexpr static const number_type q = policy_type::q;
+                    constexpr static const std::size_t scalar_field_bits = policy_type::scalar_field_bits; ///< size of the scalar field (order of the group of points) in bits 
+                    constexpr static const number_type q = policy_type::q; ///< scalar field characteristic (order of the group of points)
 
                     typedef typename detail::mnt4_g1<ModulusBits> g1_type;
                     typedef typename detail::mnt4_g2<ModulusBits> g2_type;
 
-                    //typedef typename pairing::pairing_policy<mnt4<ModulusBits>> pairing_policy;
+                    typedef typename pairing::pairing_policy<mnt4<ModulusBits>,
+                                                             pairing::detail::mnt4_pairing_functions<ModulusBits>>
+                        pairing_policy;
 
                     typedef typename policy_type::gt_field_type gt_type;
 

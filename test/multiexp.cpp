@@ -35,6 +35,7 @@
 #include <ctime>
 
 #include <nil/crypto3/algebra/multiexp/multiexp.hpp>
+#include <nil/crypto3/algebra/multiexp/policies.hpp>
 
 #include <nil/crypto3/algebra/curves/alt_bn128.hpp>
 #include <nil/crypto3/algebra/curves/bls12.hpp>
@@ -83,7 +84,7 @@ template<typename T>
 using test_instances_t = std::vector<std::vector<T>>;
 
 template<typename GroupType>
-test_instances_t<GroupType> generate_group_elements(size_t count, size_t size) {
+test_instances_t<GroupType> generate_group_elements(size_t count, std::size_t size) {
     // generating a random group element is expensive,
     // so for now we only generate a single one and repeat it
     test_instances_t<GroupType> result(count);
@@ -102,7 +103,7 @@ test_instances_t<GroupType> generate_group_elements(size_t count, size_t size) {
 }
 
 template<typename FieldType>
-test_instances_t<FieldType> generate_scalars(size_t count, size_t size) {
+test_instances_t<FieldType> generate_scalars(size_t count, std::size_t size) {
     // we use SHA512_rng because it is much faster than
     // FieldType::random_element()
     test_instances_t<FieldType> result(count);
@@ -122,14 +123,14 @@ long long get_nsec_time()
     return std::chrono::duration_cast<std::chrono::nanoseconds>(timepoint.time_since_epoch()).count();
 }
 
-template<typename GroupType, typename FieldType, multiexp_method Method>
+template<typename GroupType, typename FieldType, typename MultiexpMethod>
 run_result_t<GroupType> profile_multiexp(test_instances_t<GroupType> group_elements,
                                          test_instances_t<FieldType> scalars) {
     long long start_time = get_nsec_time();
 
     std::vector<typename GroupType::value_type> answers;
     for (size_t i = 0; i < group_elements.size(); i++) {
-        answers.push_back(multiexp<GroupType, FieldType, Method>(group_elements[i].cbegin(), group_elements[i].cend(),
+        answers.push_back(multiexp<GroupType, FieldType, MultiexpMethod>(group_elements[i].cbegin(), group_elements[i].cend(),
                                                                   scalars[i].cbegin(), scalars[i].cend(), 1));
     }
 
@@ -139,7 +140,7 @@ run_result_t<GroupType> profile_multiexp(test_instances_t<GroupType> group_eleme
 }
 
 template<typename GroupType, typename FieldType>
-void print_performance_csv(size_t expn_start, size_t expn_end_fast, size_t expn_end_naive, bool compare_answers) {
+void print_performance_csv(size_t expn_start, std::size_t expn_end_fast, std::size_t expn_end_naive, bool compare_answers) {
     for (size_t expn = expn_start; expn <= expn_end_fast; expn++) {
         printf("%ld", expn);
         fflush(stdout);
@@ -148,12 +149,12 @@ void print_performance_csv(size_t expn_start, size_t expn_end_fast, size_t expn_
         test_instances_t<FieldType> scalars = generate_scalars<FieldType>(10, 1 << expn);
 
         run_result_t<GroupType> result_bos_coster =
-            profile_multiexp<GroupType, FieldType, multiexp_method_bos_coster>(group_elements, scalars);
+            profile_multiexp<GroupType, FieldType, policies::multiexp_method_bos_coster>(group_elements, scalars);
         printf("\t%lld", result_bos_coster.first);
         fflush(stdout);
 
         run_result_t<GroupType> result_djb =
-            profile_multiexp<GroupType, FieldType, multiexp_method_BDLO12>(group_elements, scalars);
+            profile_multiexp<GroupType, FieldType, policies::multiexp_method_BDLO12>(group_elements, scalars);
         printf("\t%lld", result_djb.first);
         fflush(stdout);
 
@@ -163,7 +164,7 @@ void print_performance_csv(size_t expn_start, size_t expn_end_fast, size_t expn_
 
         if (expn <= expn_end_naive) {
             run_result_t<GroupType> result_naive =
-                profile_multiexp<GroupType, FieldType, multiexp_method_naive_plain>(group_elements, scalars);
+                profile_multiexp<GroupType, FieldType, policies::multiexp_method_naive_plain>(group_elements, scalars);
             printf("\t%lld", result_naive.first);
             fflush(stdout);
 
